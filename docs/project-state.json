@@ -1,0 +1,132 @@
+{
+  "project": "pathtorehab.com",
+  "created": "2026-01-22",
+  "current_phase": 9,
+  "phase_status": "complete",
+  "niche": {
+    "name": "SAMHSA Treatment Facilities",
+    "category": "Addiction + Mental Health",
+    "opportunity_score": 6.24,
+    "cpc_tier": 1,
+    "cpc_range": "$15-$200/click"
+  },
+  "domain": {
+    "name": "pathtorehab.com",
+    "registrar": "Namecheap (recommended)",
+    "price": "£8.40/yr",
+    "candidates_checked": 11,
+    "status": "pending_purchase"
+  },
+  "data_source": {
+    "name": "SAMHSA FindTreatment.gov API",
+    "api": "https://findtreatment.gov/locator/exportsAsJson/v2",
+    "format": "JSON API",
+    "size": "98,000+ facilities",
+    "license": "Public Domain (US Government)"
+  },
+  "competitor_benchmark": {
+    "site": "AddictionCenter.com",
+    "monthly_visitors": "1.4M",
+    "traffic_value": "$4.1M"
+  },
+  "supabase": {
+    "project_id": "qopzziazpybglvilncel",
+    "region": "us-east-1",
+    "url": "https://qopzziazpybglvilncel.supabase.co"
+  },
+  "architecture": {
+    "schema": ["facilities", "states", "cities"],
+    "route_types": 8,
+    "total_pages_estimate": 85000,
+    "rendering_strategy": "force-dynamic"
+  },
+  "database": {
+    "tables": ["states", "cities", "facilities"],
+    "indexes": 22,
+    "script": "scripts/init-db.ts"
+  },
+  "data_ingestion": {
+    "script": "scripts/ingest-data.ts",
+    "facilities_ingested": 97999,
+    "states_populated": 54,
+    "cities_populated": 10665,
+    "indexable_facilities": 26078,
+    "average_dqs": 0.72
+  },
+  "seo_foundations": {
+    "supabase_client": "src/lib/db.ts",
+    "sitemap_route": "src/app/sitemap/[id]/route.ts",
+    "sitemap_index": "src/app/api/sitemap-index/route.ts",
+    "robots": "src/app/robots.ts",
+    "metadata": "src/app/layout.tsx"
+  },
+  "design_system": {
+    "color_palette": {
+      "primary": "Teal (#0d9488) - Trust/Healing",
+      "secondary": "Purple (#7c3aed) - Compassion",
+      "accent": "Amber (#f59e0b) - Hope"
+    },
+    "theme_system": {
+      "provider": "src/components/ThemeProvider.tsx",
+      "toggle": "src/components/ThemeToggle.tsx",
+      "modes": ["light", "dark", "system"]
+    },
+    "components_created": [
+      "src/components/ThemeProvider.tsx",
+      "src/components/ThemeToggle.tsx",
+      "src/components/SearchBar.tsx",
+      "src/components/Button.tsx",
+      "src/components/AdUnit.tsx"
+    ],
+    "search_autocomplete": {
+      "component": "src/components/SearchBar.tsx",
+      "api": "src/app/api/search/route.ts",
+      "features": ["debouncing", "keyboard navigation", "portal dropdown", "mobile responsive"]
+    },
+    "assets": {
+      "favicon": "src/app/icon.tsx",
+      "og_image": "src/app/opengraph-image.tsx"
+    },
+    "ad_components": {
+      "file": "src/components/AdUnit.tsx",
+      "types": ["SidebarAd", "InContentAd", "HeroAd"]
+    },
+    "magic_ui_queries": 5
+  },
+  "pages_built": {
+    "home": "src/app/page.tsx",
+    "facility_entity": "src/app/facility/[slug]/page.tsx",
+    "state_hub": "src/app/[state]/page.tsx",
+    "city_page": "src/app/[state]/[city]/page.tsx",
+    "browse_hub": "src/app/browse/page.tsx",
+    "ad_placements": {
+      "facility": ["SidebarAd", "InContentAd"],
+      "state": ["SidebarAd", "InContentAd"],
+      "city": ["SidebarAd", "InContentAd"],
+      "browse": ["SidebarAd"],
+      "home": ["HeroAd", "SidebarAd"]
+    }
+  },
+  "data_integration": {
+    "db_client": "@supabase/supabase-js",
+    "env_vars": ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "NEXT_PUBLIC_SITE_URL"],
+    "ads_txt": "public/ads.txt",
+    "lint_status": "pass",
+    "build_status": "pass"
+  },
+  "deployment": {
+    "github_repo": "pathtorehab.com",
+    "vercel_url": "https://pathtorehabcom.vercel.app",
+    "production_url": "https://pathtorehab.com",
+    "status": "live",
+    "pro_features": {
+      "vercel_analytics": true,
+      "speed_insights": true,
+      "supabase_backups": true
+    },
+    "sitemaps_generated": 4
+  },
+  "phases_completed": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "next_phase": 10,
+  "next_action": "Quality Verification - Visual audit, Lighthouse scores, mobile testing"
+}

@@ -1,36 +1,63 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllStates, getTotalIndexableCount, SITE_NAME } from '@/lib/db';
+import { getAllStates, getTotalIndexableCount, SITE_NAME, SITE_URL } from '@/lib/db';
 import { SearchBar } from '@/components/SearchBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { HeroAd, SidebarAd } from '@/components/AdUnit';
+import { SidebarAd } from '@/components/AdUnit';
 import {
-  Building2,
+  ChevronRight,
   MapPin,
-  Phone,
+  Building2,
   Heart,
   Shield,
-  ChevronRight,
-  Users,
+  Filter,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+export const metadata: Metadata = {
+  title: 'Browse Treatment Centers by State - Drug & Alcohol Rehab Directory',
+  description:
+    'Browse addiction treatment and mental health facilities across all 50 states. Find SAMHSA-verified rehab centers with direct contact information.',
+  openGraph: {
+    title: 'Browse Treatment Centers by State',
+    description:
+      'Browse addiction treatment and mental health facilities across all 50 states.',
+    url: `${SITE_URL}/browse`,
+    siteName: SITE_NAME,
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${SITE_URL}/browse`,
+  },
+};
+
 // State card component
-function StateCard({ code, name, slug, facilityCount }: { code: string; name: string; slug: string; facilityCount: number }) {
+function StateCard({
+  code,
+  name,
+  slug,
+  facilityCount,
+}: {
+  code: string;
+  name: string;
+  slug: string;
+  facilityCount: number;
+}) {
   return (
     <Link
       href={`/${slug}`}
       className="flex items-center justify-between p-4 bg-card rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all group"
     >
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-semibold">
+        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold">
           {code}
         </div>
         <div>
-          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">
+          <h2 className="font-medium text-foreground group-hover:text-primary transition-colors">
             {name}
-          </h3>
+          </h2>
           <p className="text-sm text-muted-foreground">
             {facilityCount.toLocaleString()} facilities
           </p>
@@ -41,27 +68,54 @@ function StateCard({ code, name, slug, facilityCount }: { code: string; name: st
   );
 }
 
-// Feature card component
-function FeatureCard({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) {
-  return (
-    <div className="p-6 bg-card rounded-xl border border-border">
-      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-        <Icon className="w-6 h-6 text-primary" />
-      </div>
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
-    </div>
-  );
-}
+// Region groupings
+const regions: Record<string, string[]> = {
+  Northeast: ['CT', 'ME', 'MA', 'NH', 'NJ', 'NY', 'PA', 'RI', 'VT'],
+  Southeast: ['AL', 'AR', 'FL', 'GA', 'KY', 'LA', 'MS', 'NC', 'SC', 'TN', 'VA', 'WV'],
+  Midwest: ['IL', 'IN', 'IA', 'KS', 'MI', 'MN', 'MO', 'NE', 'ND', 'OH', 'SD', 'WI'],
+  Southwest: ['AZ', 'NM', 'OK', 'TX'],
+  West: ['AK', 'CA', 'CO', 'HI', 'ID', 'MT', 'NV', 'OR', 'UT', 'WA', 'WY'],
+  Territories: ['AS', 'GU', 'MP', 'PR', 'VI', 'DC'],
+};
 
-export default async function HomePage() {
+export default async function BrowsePage() {
   const [states, totalFacilities] = await Promise.all([
     getAllStates(),
     getTotalIndexableCount(),
   ]);
 
+  // Group states by region
+  const statesByRegion: Record<string, typeof states> = {};
+  for (const [region, codes] of Object.entries(regions)) {
+    statesByRegion[region] = states.filter((s) => codes.includes(s.code));
+  }
+
+  // JSON-LD
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Treatment Centers by State',
+    description: 'Browse addiction treatment facilities across all US states',
+    numberOfItems: states.length,
+    itemListElement: states.map((state, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'State',
+        name: state.name,
+        url: `${SITE_URL}/${state.slug}`,
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -72,50 +126,54 @@ export default async function HomePage() {
             <span className="font-bold text-xl text-foreground">{SITE_NAME}</span>
           </Link>
           <nav className="flex items-center gap-4">
-            <Link
-              href="/browse"
-              className="hidden sm:block text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Browse All
-            </Link>
             <ThemeToggle />
           </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-16 md:py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(13,148,136,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(124,58,237,0.1),transparent_50%)]" />
+      {/* Breadcrumbs */}
+      <div className="bg-muted/30 border-b border-border">
+        <div className="container mx-auto px-4 py-3">
+          <nav className="flex items-center gap-2 text-sm">
+            <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground font-medium">Browse</span>
+          </nav>
+        </div>
+      </div>
 
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-              Find Your Path to{' '}
-              <span className="text-primary">Recovery</span>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Browse Treatment Centers by State
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Search {totalFacilities.toLocaleString()}+ verified treatment centers across the United States.
-              Free, confidential help for addiction and mental health.
+            <p className="text-lg text-muted-foreground mb-6">
+              Explore {totalFacilities.toLocaleString()} verified addiction treatment and mental
+              health facilities across {states.length} states and territories. All data is sourced
+              from SAMHSA.
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-xl">
               <SearchBar
                 placeholder="Search by facility name, city, or state..."
                 className="w-full"
               />
             </div>
 
-            {/* Quick stats */}
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-sm text-muted-foreground">
+            {/* Stats */}
+            <div className="flex flex-wrap items-center gap-6 mt-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-primary" />
-                <span>{totalFacilities.toLocaleString()} Facilities</span>
+                <span>{totalFacilities.toLocaleString()} Total Facilities</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-secondary" />
-                <span>{states.length} States</span>
+                <span>{states.length} States & Territories</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-accent" />
@@ -126,56 +184,35 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Hero Ad */}
-      <div className="container mx-auto px-4">
-        <HeroAd />
-      </div>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* States Grid */}
+          {/* States by Region */}
           <div className="flex-1">
-            {/* Features Section */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-6">
-                Why Use Path To Rehab?
-              </h2>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <FeatureCard
-                  icon={Shield}
-                  title="SAMHSA Verified Data"
-                  description="All facilities are sourced from official SAMHSA databases, ensuring accuracy and legitimacy."
-                />
-                <FeatureCard
-                  icon={Phone}
-                  title="Direct Contact Info"
-                  description="Get phone numbers and websites to contact facilities directly, no middlemen."
-                />
-                <FeatureCard
-                  icon={Users}
-                  title="Comprehensive Coverage"
-                  description="Browse substance abuse, mental health, and combined treatment options nationwide."
-                />
+            {/* Quick Jump */}
+            <div className="mb-8 p-4 bg-muted/50 rounded-lg border border-border">
+              <div className="flex items-center gap-2 mb-3">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">Jump to Region:</span>
               </div>
-            </section>
-
-            {/* Browse by State */}
-            <section>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-foreground">
-                  Browse by State
-                </h2>
-                <Link
-                  href="/browse"
-                  className="text-primary hover:underline flex items-center gap-1"
-                >
-                  View All <ChevronRight className="w-4 h-4" />
-                </Link>
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(regions).map((region) => (
+                  <a
+                    key={region}
+                    href={`#${region.toLowerCase()}`}
+                    className="px-3 py-1.5 bg-card border border-border rounded-lg text-sm text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+                  >
+                    {region}
+                  </a>
+                ))}
               </div>
+            </div>
 
+            {/* All States */}
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-foreground mb-4">All States A-Z</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {states.slice(0, 12).map((state) => (
+                {states.map((state) => (
                   <StateCard
                     key={state.id}
                     code={state.code}
@@ -185,19 +222,27 @@ export default async function HomePage() {
                   />
                 ))}
               </div>
-
-              {states.length > 12 && (
-                <div className="mt-6 text-center">
-                  <Link
-                    href="/browse"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    View All {states.length} States
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              )}
             </section>
+
+            {/* By Region */}
+            {Object.entries(statesByRegion).map(([region, regionStates]) => (
+              regionStates.length > 0 && (
+                <section key={region} id={region.toLowerCase()} className="mb-8 scroll-mt-24">
+                  <h2 className="text-xl font-bold text-foreground mb-4">{region}</h2>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {regionStates.map((state) => (
+                      <StateCard
+                        key={state.id}
+                        code={state.code}
+                        name={state.name}
+                        slug={state.slug}
+                        facilityCount={state.facility_count}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )
+            ))}
           </div>
 
           {/* Sidebar */}
@@ -217,6 +262,19 @@ export default async function HomePage() {
               >
                 Call 1-800-662-4357
               </a>
+            </div>
+
+            {/* About */}
+            <div className="mt-8 p-6 bg-muted/50 rounded-xl border border-border">
+              <h3 className="font-semibold text-foreground mb-3">About Our Data</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                All treatment facility data is sourced from SAMHSA (Substance Abuse and Mental
+                Health Services Administration), ensuring accuracy and legitimacy.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                We display facilities that meet our data quality standards, including verified
+                contact information and service details.
+              </p>
             </div>
           </aside>
         </div>

@@ -1,0 +1,7 @@
+# PathToRehab.com - ads.txt
+# Replace PUBLISHER_ID with your actual AdSense publisher ID
+# Format: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# Add additional ad networks here as needed

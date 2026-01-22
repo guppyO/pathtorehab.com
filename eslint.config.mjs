@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Build/setup scripts (run separately with tsx, not part of Next.js build)
+    "scripts/**",
   ]),
 ]);
 
