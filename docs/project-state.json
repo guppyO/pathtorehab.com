@@ -158,9 +158,27 @@
     "external_links": "pass",
     "phone_links": "pass"
   },
-  "phases_completed": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-  "current_phase": 11,
+  "automation": {
+    "legal_pages": {
+      "privacy": "src/app/privacy/page.tsx",
+      "terms": "src/app/terms/page.tsx"
+    },
+    "data_scripts": {
+      "download": "scripts/download-data.ts",
+      "ingest": "scripts/ingest-data.ts"
+    },
+    "github_actions": {
+      "workflow": ".github/workflows/update-data.yml",
+      "schedule": "0 6 15 * * (Monthly on 15th at 6am UTC)",
+      "status": "active"
+    },
+    "github_secrets": ["SUPABASE_DIRECT_URL"],
+    "gsc_placeholder": "VERIFICATION_CODE_PLACEHOLDER in layout.tsx",
+    "adsense_placeholder": "ca-pub-XXXXXXXXXXXXXXXX in layout.tsx"
+  },
+  "phases_completed": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  "current_phase": 12,
   "phase_status": "complete",
-  "next_phase": 12,
-  "next_action": "Final Automation - GitHub Actions workflow, data refresh scripts"
+  "project_status": "COMPLETE",
+  "next_action": "Site is live and automated. Purchase domain when ready."
 }
