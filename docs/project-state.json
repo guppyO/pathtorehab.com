@@ -161,7 +161,8 @@
   "automation": {
     "legal_pages": {
       "privacy": "src/app/privacy/page.tsx",
-      "terms": "src/app/terms/page.tsx"
+      "terms": "src/app/terms/page.tsx",
+      "disclaimer": "src/app/disclaimer/page.tsx"
     },
     "data_scripts": {
       "download": "scripts/download-data.ts",
