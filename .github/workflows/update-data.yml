@@ -1,0 +1,68 @@
+name: Update Data
+
+on:
+  schedule:
+    # Monthly on the 15th at 6am UTC
+    - cron: '0 6 15 * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update even if no new data'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download latest data
+        id: download
+        run: |
+          npx tsx scripts/download-data.ts
+          if [ -f "data/metadata.json" ]; then
+            RECORD_COUNT=$(cat data/metadata.json | jq -r '.recordCount')
+            echo "record_count=$RECORD_COUNT" >> $GITHUB_OUTPUT
+            echo "has_data=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_data=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/ || echo "data_changed=true" >> $GITHUB_OUTPUT
+
+      - name: Ingest to database
+        if: steps.changes.outputs.data_changed == 'true' || inputs.force_update == 'true'
+        env:
+          DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+        run: |
+          echo "DIRECT_URL=$DIRECT_URL" > Supabase.txt
+          npx tsx scripts/ingest-data.ts --latest
+          rm Supabase.txt
+
+      - name: Commit updated data
+        if: steps.changes.outputs.data_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git commit -m "chore: update data (${{ steps.download.outputs.record_count }} records)"
+          git push
