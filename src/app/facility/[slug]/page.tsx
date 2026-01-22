@@ -19,6 +19,10 @@ import {
   Heart,
   ChevronRight,
   ExternalLink,
+  Navigation,
+  HelpCircle,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -93,6 +97,115 @@ function ServiceSection({ title, items, icon: Icon }: { title: string; items: st
             {item}
           </span>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// Google Maps component
+function FacilityMap({ address, lat, lng, name }: { address: string; lat: number | null; lng: number | null; name: string }) {
+  // Use coordinates if available, otherwise use address
+  const query = lat && lng
+    ? `${lat},${lng}`
+    : encodeURIComponent(address);
+
+  const mapUrl = `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const directionsUrl = lat && lng
+    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+
+  return (
+    <div className="bg-card rounded-xl border border-border overflow-hidden mb-8">
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-primary" />
+          Location
+        </h2>
+        <a
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+        >
+          <Navigation className="w-4 h-4" />
+          Get Directions
+        </a>
+      </div>
+      <div className="aspect-[16/9] md:aspect-[21/9]">
+        <iframe
+          src={mapUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title={`Map showing location of ${name}`}
+          className="w-full h-full"
+        />
+      </div>
+      <div className="p-4 bg-muted/30">
+        <p className="text-sm text-muted-foreground">{address}</p>
+      </div>
+    </div>
+  );
+}
+
+// Questions to ask section
+function QuestionsToAsk() {
+  const questions = [
+    "What types of treatment programs do you offer?",
+    "Do you accept my insurance? What are the out-of-pocket costs?",
+    "What is the length of your treatment program?",
+    "What credentials do your staff members have?",
+    "Do you offer detox services on-site?",
+    "What is your approach to treatment (12-step, holistic, etc.)?",
+    "Do you offer family therapy or involvement in treatment?",
+    "What aftercare support do you provide?",
+  ];
+
+  return (
+    <div className="bg-card rounded-xl border border-border p-6 mb-8">
+      <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+        <HelpCircle className="w-5 h-5 text-primary" />
+        Questions to Ask When You Call
+      </h2>
+      <p className="text-muted-foreground mb-4">
+        When contacting this facility, consider asking these important questions to help you make an informed decision:
+      </p>
+      <ul className="space-y-3">
+        {questions.map((question, i) => (
+          <li key={i} className="flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <span className="text-foreground">{question}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Crisis helpline banner
+function CrisisHelpline() {
+  return (
+    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20 p-6 mb-8">
+      <div className="flex items-start gap-4">
+        <div className="p-3 bg-primary/10 rounded-full shrink-0">
+          <AlertCircle className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-2">Need Immediate Help?</h2>
+          <p className="text-muted-foreground mb-3">
+            SAMHSA&apos;s National Helpline is a free, confidential, 24/7, 365-day-a-year treatment referral and information service.
+          </p>
+          <a
+            href="tel:1-800-662-4357"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+          >
+            <Phone className="w-4 h-4" />
+            Call 1-800-662-4357
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -268,6 +381,14 @@ export default async function FacilityPage({ params }: PageProps) {
                 </div>
               </div>
 
+              {/* Location Map */}
+              <FacilityMap
+                address={fullAddress}
+                lat={facility.latitude}
+                lng={facility.longitude}
+                name={facility.name}
+              />
+
               {/* In-content ad */}
               <InContentAd />
 
@@ -302,6 +423,12 @@ export default async function FacilityPage({ params }: PageProps) {
                   />
                 </div>
               </div>
+
+              {/* Questions to Ask */}
+              <QuestionsToAsk />
+
+              {/* Crisis Helpline */}
+              <CrisisHelpline />
 
               {/* Related facilities */}
               {otherFacilities.length > 0 && (
