@@ -229,7 +229,7 @@ export default async function FacilityPage({ params }: PageProps) {
 
       <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+        <header className="sticky top-0 z-50 bg-background border-b border-border">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
