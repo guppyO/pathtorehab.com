@@ -289,65 +289,102 @@ export default async function FacilityPage({ params }: PageProps) {
               <div className="bg-card rounded-xl border border-border p-5 mb-6">
                 <h2 className="text-lg font-semibold text-foreground mb-4">Contact & Location</h2>
 
-                {/* Contact Info */}
-                <div className="space-y-3 mb-5">
-                  {facility.phone && (
-                    <a href={`tel:${facility.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                      <Phone className="w-5 h-5 text-primary" />
-                      <div>
-                        <span className="font-medium">{facility.phone}</span>
-                        <span className="text-sm text-muted-foreground ml-2">Main</span>
-                      </div>
-                    </a>
-                  )}
-                  {facility.intake_phone && facility.intake_phone !== facility.phone && (
-                    <a href={`tel:${facility.intake_phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                      <Phone className="w-5 h-5 text-secondary" />
-                      <div>
-                        <span className="font-medium">{facility.intake_phone}</span>
-                        <span className="text-sm text-muted-foreground ml-2">Intake</span>
-                      </div>
-                    </a>
-                  )}
-                  {facility.hotline && (
-                    <a href={`tel:${facility.hotline}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                      <Clock className="w-5 h-5 text-accent" />
-                      <div>
-                        <span className="font-medium">{facility.hotline}</span>
-                        <span className="text-sm text-muted-foreground ml-2">24/7 Hotline</span>
-                      </div>
-                    </a>
-                  )}
-                  {facility.website && (
-                    <a href={facility.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                      <Globe className="w-5 h-5 text-muted-foreground" />
-                      <span className="font-medium flex items-center gap-1">
-                        Visit Website <ExternalLink className="w-3 h-3" />
-                      </span>
-                    </a>
-                  )}
-                </div>
+                <div className="flex flex-col md:flex-row gap-5">
+                  {/* Left: Contact Info & Buttons */}
+                  <div className="flex-1 min-w-0">
+                    {/* Contact Info */}
+                    <div className="space-y-3 mb-4">
+                      {facility.phone && (
+                        <a href={`tel:${facility.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                          <Phone className="w-5 h-5 text-primary shrink-0" />
+                          <div>
+                            <span className="font-medium">{facility.phone}</span>
+                            <span className="text-sm text-muted-foreground ml-2">Main</span>
+                          </div>
+                        </a>
+                      )}
+                      {facility.intake_phone && facility.intake_phone !== facility.phone && (
+                        <a href={`tel:${facility.intake_phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                          <Phone className="w-5 h-5 text-secondary shrink-0" />
+                          <div>
+                            <span className="font-medium">{facility.intake_phone}</span>
+                            <span className="text-sm text-muted-foreground ml-2">Intake</span>
+                          </div>
+                        </a>
+                      )}
+                      {facility.hotline && (
+                        <a href={`tel:${facility.hotline}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                          <Clock className="w-5 h-5 text-accent shrink-0" />
+                          <div>
+                            <span className="font-medium">{facility.hotline}</span>
+                            <span className="text-sm text-muted-foreground ml-2">24/7 Hotline</span>
+                          </div>
+                        </a>
+                      )}
+                      {facility.website && (
+                        <a href={facility.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                          <Globe className="w-5 h-5 text-muted-foreground shrink-0" />
+                          <span className="font-medium flex items-center gap-1">
+                            Visit Website <ExternalLink className="w-3 h-3" />
+                          </span>
+                        </a>
+                      )}
+                    </div>
 
-                {/* Directions */}
-                <div className="flex gap-3 pt-4 border-t border-border">
-                  <a
-                    href={directionsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    <Navigation className="w-4 h-4" />
-                    Get Directions
-                  </a>
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg hover:bg-muted transition-colors font-medium text-foreground"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    View on Map
-                  </a>
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <a
+                        href={directionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+                      >
+                        <Navigation className="w-4 h-4" />
+                        Get Directions
+                      </a>
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg hover:bg-muted transition-colors font-medium text-foreground text-sm"
+                      >
+                        <MapPin className="w-4 h-4" />
+                        View on Map
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Right: Map Preview */}
+                  <div className="md:w-[280px] shrink-0">
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full h-[180px] md:h-full rounded-lg overflow-hidden border border-border bg-muted relative group"
+                    >
+                      {facility.latitude && facility.longitude ? (
+                        <iframe
+                          src={`https://maps.google.com/maps?q=${facility.latitude},${facility.longitude}&z=15&output=embed`}
+                          className="w-full h-full pointer-events-none"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          title={`Map showing ${facility.name}`}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50">
+                          <MapPin className="w-8 h-8 text-primary mb-2" />
+                          <span className="text-sm text-muted-foreground">View on Google Maps</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          Open in Maps
+                        </span>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               </div>
 
