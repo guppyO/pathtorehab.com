@@ -80,21 +80,10 @@ function FacilityTypeBadge({ type }: { type: string | null }) {
   );
 }
 
-// Service category display - Enhanced with better hierarchy
-function ServiceCategory({
-  title,
-  items,
-  icon: Icon,
-  highlight = false
-}: {
-  title: string;
-  items: string[];
-  icon: React.ElementType;
-  highlight?: boolean;
-}) {
+// Simple service section with tags
+function ServiceSection({ title, items, icon: Icon }: { title: string; items: string[]; icon: React.ElementType }) {
   if (!items || items.length === 0) return null;
 
-  // Split semicolon-separated strings into individual tags and clean them up
   const tags = items
     .flatMap(item => item.split(';'))
     .map(tag => tag.trim())
@@ -102,160 +91,24 @@ function ServiceCategory({
 
   if (tags.length === 0) return null;
 
-  const maxTags = 15;
-  const displayTags = tags.slice(0, maxTags);
-  const remaining = tags.length - maxTags;
-
   return (
-    <div className={`p-4 rounded-xl ${highlight ? 'bg-primary/5 border border-primary/20' : 'bg-muted/30'}`}>
-      <h3 className={`flex items-center gap-2 font-semibold mb-3 ${highlight ? 'text-primary' : 'text-foreground'}`}>
-        <Icon className={`w-5 h-5 ${highlight ? 'text-primary' : 'text-muted-foreground'}`} />
+    <div className="py-4 border-b border-border last:border-0">
+      <h3 className="flex items-center gap-2 text-base font-semibold text-foreground mb-3">
+        <Icon className="w-5 h-5 text-primary" />
         {title}
       </h3>
       <div className="flex flex-wrap gap-2">
-        {displayTags.map((tag, i) => (
-          <span
-            key={i}
-            className={`px-3 py-1.5 rounded-lg text-sm ${
-              highlight
-                ? 'bg-primary/20 text-foreground border border-primary/30'
-                : 'bg-background text-muted-foreground'
-            }`}
-          >
+        {tags.map((tag, i) => (
+          <span key={i} className="px-3 py-1 bg-muted rounded-full text-sm text-muted-foreground">
             {tag}
           </span>
         ))}
-        {remaining > 0 && (
-          <span className="px-3 py-1.5 text-sm text-muted-foreground">
-            +{remaining} more
-          </span>
-        )}
       </div>
     </div>
   );
 }
 
-// Combined Contact & Location section
-function ContactLocation({
-  facility,
-  address
-}: {
-  facility: Facility;
-  address: string;
-}) {
-  const mapsUrl = facility.latitude && facility.longitude
-    ? `https://www.google.com/maps/search/?api=1&query=${facility.latitude},${facility.longitude}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-
-  const directionsUrl = facility.latitude && facility.longitude
-    ? `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}`
-    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
-
-  return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden mb-8">
-      {/* Phone numbers row */}
-      <div className="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
-        {facility.phone && (
-          <a
-            href={`tel:${facility.phone}`}
-            className="flex items-center gap-3 p-4 bg-card hover:bg-primary/5 transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Phone className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Main Phone</p>
-              <p className="font-semibold text-foreground">{facility.phone}</p>
-            </div>
-          </a>
-        )}
-        {facility.intake_phone && (
-          <a
-            href={`tel:${facility.intake_phone}`}
-            className="flex items-center gap-3 p-4 bg-card hover:bg-secondary/5 transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-              <Phone className="w-5 h-5 text-secondary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Intake Line</p>
-              <p className="font-semibold text-foreground">{facility.intake_phone}</p>
-            </div>
-          </a>
-        )}
-        {facility.hotline && (
-          <a
-            href={`tel:${facility.hotline}`}
-            className="flex items-center gap-3 p-4 bg-card hover:bg-accent/5 transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-              <Clock className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">24/7 Hotline</p>
-              <p className="font-semibold text-foreground">{facility.hotline}</p>
-            </div>
-          </a>
-        )}
-        {facility.website && (
-          <a
-            href={facility.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 p-4 bg-card hover:bg-muted transition-colors"
-          >
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <Globe className="w-5 h-5 text-muted-foreground" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Website</p>
-              <p className="font-semibold text-foreground flex items-center gap-1">
-                Visit Website <ExternalLink className="w-3 h-3" />
-              </p>
-            </div>
-          </a>
-        )}
-      </div>
-
-      {/* Location & Directions row */}
-      <div className="p-4 border-t border-border bg-muted/30">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-              <MapPin className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Address</p>
-              <p className="font-medium text-foreground">{address}</p>
-            </div>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <a
-              href={directionsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-            >
-              <Navigation className="w-4 h-4" />
-              Get Directions
-            </a>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 border border-border rounded-lg hover:bg-background transition-colors font-medium text-foreground"
-            >
-              <ExternalLink className="w-4 h-4" />
-              View Map
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Questions to ask section - Ultra compact
+// Questions to ask
 function QuestionsToAsk() {
   const questions = [
     "What treatment programs do you offer?",
@@ -266,14 +119,14 @@ function QuestionsToAsk() {
 
   return (
     <div className="bg-muted/30 rounded-xl border border-border p-4 mb-6">
-      <h3 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+      <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
         <HelpCircle className="w-4 h-4 text-primary" />
         Questions to Ask
       </h3>
       <div className="flex flex-wrap gap-2">
-        {questions.map((question, i) => (
+        {questions.map((q, i) => (
           <span key={i} className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">
-            {question}
+            {q}
           </span>
         ))}
       </div>
@@ -281,7 +134,7 @@ function QuestionsToAsk() {
   );
 }
 
-// Crisis helpline banner - Compact
+// Crisis helpline
 function CrisisHelpline() {
   return (
     <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20 p-4 mb-6">
@@ -291,9 +144,7 @@ function CrisisHelpline() {
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-base font-semibold text-foreground">Need Immediate Help?</h2>
-          <p className="text-sm text-muted-foreground">
-            SAMHSA&apos;s National Helpline - Free, confidential, 24/7
-          </p>
+          <p className="text-sm text-muted-foreground">SAMHSA Helpline - Free, confidential, 24/7</p>
         </div>
         <a
           href="tel:1-800-662-4357"
@@ -307,7 +158,7 @@ function CrisisHelpline() {
   );
 }
 
-// Related facility card - Compact
+// Related facility card
 function RelatedFacilityCard({ facility }: { facility: Facility }) {
   return (
     <Link
@@ -331,15 +182,20 @@ export default async function FacilityPage({ params }: PageProps) {
     notFound();
   }
 
-  // Get related facilities in the same city
   const relatedFacilities = await getFacilitiesByCity(facility.state, facility.city_slug, 6);
   const otherFacilities = relatedFacilities.filter(f => f.id !== facility.id).slice(0, 4);
 
-  // Build address string
   const addressParts = [facility.street1, facility.street2, facility.city, facility.state, facility.zip].filter(Boolean);
   const fullAddress = addressParts.join(', ');
 
-  // JSON-LD structured data
+  const mapsUrl = facility.latitude && facility.longitude
+    ? `https://www.google.com/maps/search/?api=1&query=${facility.latitude},${facility.longitude}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
+
+  const directionsUrl = facility.latitude && facility.longitude
+    ? `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'MedicalOrganization',
@@ -382,10 +238,7 @@ export default async function FacilityPage({ params }: PageProps) {
               <span className="font-bold text-xl text-foreground">{SITE_NAME}</span>
             </Link>
             <nav className="flex items-center gap-4">
-              <Link
-                href="/browse"
-                className="hidden sm:block text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <Link href="/browse" className="hidden sm:block text-muted-foreground hover:text-foreground transition-colors">
                 Browse All
               </Link>
               <ThemeToggle />
@@ -397,18 +250,13 @@ export default async function FacilityPage({ params }: PageProps) {
         <div className="bg-muted/50 border-b border-border">
           <div className="container mx-auto px-4 py-3">
             <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/" className="hover:text-foreground transition-colors">
-                Home
-              </Link>
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
               <ChevronRight className="w-4 h-4" />
               <Link href={`/${facility.state.toLowerCase()}`} className="hover:text-foreground transition-colors">
                 {facility.state_name || facility.state}
               </Link>
               <ChevronRight className="w-4 h-4" />
-              <Link
-                href={`/${facility.state.toLowerCase()}/${facility.city_slug}`}
-                className="hover:text-foreground transition-colors"
-              >
+              <Link href={`/${facility.state.toLowerCase()}/${facility.city_slug}`} className="hover:text-foreground transition-colors">
                 {facility.city}
               </Link>
               <ChevronRight className="w-4 h-4" />
@@ -422,72 +270,97 @@ export default async function FacilityPage({ params }: PageProps) {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main content area */}
             <main className="flex-1 min-w-0">
-              {/* Header */}
+              {/* Facility Header */}
               <header className="mb-6">
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   <FacilityTypeBadge type={facility.facility_type} />
                   {facility.name_alt && (
-                    <span className="text-sm text-muted-foreground">
-                      AKA: {facility.name_alt}
-                    </span>
+                    <span className="text-sm text-muted-foreground">AKA: {facility.name_alt}</span>
                   )}
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  {facility.name}
-                </h1>
-                <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{facility.name}</h1>
+                <p className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="w-4 h-4 text-primary shrink-0" />
                   {fullAddress}
                 </p>
               </header>
 
-              {/* Combined Contact & Location */}
-              <ContactLocation facility={facility} address={fullAddress} />
+              {/* Contact & Location Card */}
+              <div className="bg-card rounded-xl border border-border p-5 mb-6">
+                <h2 className="text-lg font-semibold text-foreground mb-4">Contact & Location</h2>
 
-              {/* Services & Programs - Expanded layout */}
-              <section className="mb-8">
-                <h2 className="text-2xl font-bold text-foreground mb-6">Services & Programs</h2>
-
-                {/* Type of Care - Most important, displayed prominently */}
-                <ServiceCategory
-                  title="Type of Care"
-                  items={facility.type_of_care || []}
-                  icon={Heart}
-                />
-
-                {/* Service Settings */}
-                <div className="mt-4">
-                  <ServiceCategory
-                    title="Service Settings"
-                    items={facility.service_settings || []}
-                    icon={Building2}
-                  />
+                {/* Contact Info */}
+                <div className="space-y-3 mb-5">
+                  {facility.phone && (
+                    <a href={`tel:${facility.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <Phone className="w-5 h-5 text-primary" />
+                      <div>
+                        <span className="font-medium">{facility.phone}</span>
+                        <span className="text-sm text-muted-foreground ml-2">Main</span>
+                      </div>
+                    </a>
+                  )}
+                  {facility.intake_phone && facility.intake_phone !== facility.phone && (
+                    <a href={`tel:${facility.intake_phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <Phone className="w-5 h-5 text-secondary" />
+                      <div>
+                        <span className="font-medium">{facility.intake_phone}</span>
+                        <span className="text-sm text-muted-foreground ml-2">Intake</span>
+                      </div>
+                    </a>
+                  )}
+                  {facility.hotline && (
+                    <a href={`tel:${facility.hotline}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <Clock className="w-5 h-5 text-accent" />
+                      <div>
+                        <span className="font-medium">{facility.hotline}</span>
+                        <span className="text-sm text-muted-foreground ml-2">24/7 Hotline</span>
+                      </div>
+                    </a>
+                  )}
+                  {facility.website && (
+                    <a href={facility.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <Globe className="w-5 h-5 text-muted-foreground" />
+                      <span className="font-medium flex items-center gap-1">
+                        Visit Website <ExternalLink className="w-3 h-3" />
+                      </span>
+                    </a>
+                  )}
                 </div>
 
-                {/* Payment Options - Highlighted because users care about affordability */}
-                <div className="mt-4">
-                  <ServiceCategory
-                    title="Payment & Insurance Accepted"
-                    items={facility.payment_options || []}
-                    icon={CreditCard}
-                    highlight={true}
-                  />
+                {/* Directions */}
+                <div className="flex gap-3 pt-4 border-t border-border">
+                  <a
+                    href={directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Get Directions
+                  </a>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg hover:bg-muted transition-colors font-medium text-foreground"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    View on Map
+                  </a>
                 </div>
+              </div>
 
-                {/* Who They Serve - Two columns on larger screens */}
-                <div className="grid gap-4 mt-4 md:grid-cols-2">
-                  <ServiceCategory
-                    title="Age Groups Served"
-                    items={facility.age_groups || []}
-                    icon={Users}
-                  />
-                  <ServiceCategory
-                    title="Special Programs"
-                    items={facility.special_programs || []}
-                    icon={CheckCircle}
-                  />
-                </div>
-              </section>
+              {/* Services & Programs Card */}
+              <div className="bg-card rounded-xl border border-border p-5 mb-6">
+                <h2 className="text-lg font-semibold text-foreground mb-2">Services & Programs</h2>
+
+                <ServiceSection title="Type of Care" items={facility.type_of_care || []} icon={Heart} />
+                <ServiceSection title="Service Settings" items={facility.service_settings || []} icon={Building2} />
+                <ServiceSection title="Payment & Insurance" items={facility.payment_options || []} icon={CreditCard} />
+                <ServiceSection title="Age Groups Served" items={facility.age_groups || []} icon={Users} />
+                <ServiceSection title="Special Programs" items={facility.special_programs || []} icon={CheckCircle} />
+              </div>
 
               {/* In-content ad */}
               <InContentAd />
@@ -502,15 +375,12 @@ export default async function FacilityPage({ params }: PageProps) {
               {otherFacilities.length > 0 && (
                 <div className="bg-card rounded-xl border border-border p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-semibold text-foreground">
-                      Other Facilities in {facility.city}
-                    </h2>
+                    <h2 className="text-lg font-semibold text-foreground">Other Facilities in {facility.city}</h2>
                     <Link
                       href={`/${facility.state.toLowerCase()}/${facility.city_slug}`}
                       className="text-sm text-primary hover:underline flex items-center gap-0.5"
                     >
-                      View all
-                      <ChevronRight className="w-4 h-4" />
+                      View all <ChevronRight className="w-4 h-4" />
                     </Link>
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
