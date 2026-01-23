@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, MapPin, Building2, Loader2 } from 'lucide-react';
 
-// Search result type
-interface SearchResult {
+// Search result types
+interface FacilityResult {
   id: string;
   name: string;
   city: string;
@@ -15,6 +15,16 @@ interface SearchResult {
   slug: string;
   facility_type: string;
 }
+
+interface StateResult {
+  id: number;
+  code: string;
+  name: string;
+  slug: string;
+  facility_count: number;
+}
+
+type SearchResult = FacilityResult | StateResult;
 
 // Debounce hook - REQUIRED to avoid API spam
 function useDebounce<T>(value: T, delay: number): T {
@@ -90,9 +100,8 @@ function DropdownPortal({
   );
 }
 
-// MOBILE DROPDOWN ITEM LAYOUT (CRITICAL)
-// On mobile, stack content vertically to prevent truncation:
-function SearchResultItem({ result }: { result: SearchResult }) {
+// Facility result item
+function FacilityResultItem({ result }: { result: FacilityResult }) {
   const facilityTypeLabel =
     result.facility_type === 'SA'
       ? 'Substance Abuse'
@@ -124,14 +133,36 @@ function SearchResultItem({ result }: { result: SearchResult }) {
   );
 }
 
+// State result item
+function StateResultItem({ result }: { result: StateResult }) {
+  return (
+    <Link
+      href={`/${result.slug}`}
+      className="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors"
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-semibold text-sm">
+          {result.code}
+        </div>
+        <span className="font-medium text-foreground">{result.name}</span>
+      </div>
+      <span className="text-sm text-muted-foreground">
+        {result.facility_count.toLocaleString()} facilities
+      </span>
+    </Link>
+  );
+}
+
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
+  searchType?: 'facilities' | 'states';
 }
 
 export function SearchBar({
-  placeholder = 'Search treatment centers...',
+  placeholder,
   className = '',
+  searchType = 'facilities',
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -145,9 +176,22 @@ export function SearchBar({
 
   const debouncedQuery = useDebounce(query, 200);
 
+  // Default placeholders based on search type
+  const defaultPlaceholder = searchType === 'states'
+    ? 'Search states...'
+    : 'Search by facility name...';
+
+  const actualPlaceholder = placeholder || defaultPlaceholder;
+
+  // Minimum characters for search
+  const minChars = searchType === 'states' ? 1 : 2;
+
+  // API endpoint based on search type
+  const apiEndpoint = searchType === 'states' ? '/api/search-states' : '/api/search';
+
   // Fetch search results
   useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
+    if (!debouncedQuery || debouncedQuery.length < minChars) {
       setResults([]);
       return;
     }
@@ -156,7 +200,7 @@ export function SearchBar({
       setIsLoading(true);
       try {
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(debouncedQuery)}`
+          `${apiEndpoint}?q=${encodeURIComponent(debouncedQuery)}`
         );
         const data = await res.json();
         setResults(data.results || []);
@@ -169,7 +213,7 @@ export function SearchBar({
     };
 
     fetchResults();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, apiEndpoint, minChars]);
 
   // Click outside to close
   useEffect(() => {
@@ -203,7 +247,12 @@ export function SearchBar({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && results[highlightedIndex]) {
-          router.push(`/facility/${results[highlightedIndex].slug}`);
+          const result = results[highlightedIndex];
+          if (searchType === 'states') {
+            router.push(`/${(result as StateResult).slug}`);
+          } else {
+            router.push(`/facility/${(result as FacilityResult).slug}`);
+          }
           setIsOpen(false);
         }
         break;
@@ -211,6 +260,11 @@ export function SearchBar({
         setIsOpen(false);
         break;
     }
+  };
+
+  // Type guard to check if result is a state
+  const isStateResult = (result: SearchResult): result is StateResult => {
+    return 'code' in result && 'facility_count' in result;
   };
 
   return (
@@ -228,9 +282,9 @@ export function SearchBar({
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={actualPlaceholder}
           className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
-          aria-label="Search treatment centers"
+          aria-label={searchType === 'states' ? 'Search states' : 'Search treatment centers'}
           autoComplete="off"
         />
         {isLoading && (
@@ -238,7 +292,7 @@ export function SearchBar({
         )}
       </div>
 
-      <DropdownPortal isOpen={isOpen && query.length >= 2} inputRef={inputRef}>
+      <DropdownPortal isOpen={isOpen && query.length >= minChars} inputRef={inputRef}>
         <div className="bg-card border border-border rounded-lg shadow-lg overflow-hidden">
           {isLoading ? (
             <div className="p-4 text-center text-muted-foreground">
@@ -249,21 +303,34 @@ export function SearchBar({
             <div className="divide-y divide-border">
               {results.map((result, index) => (
                 <div
-                  key={result.id}
+                  key={isStateResult(result) ? result.id : result.id}
                   className={
                     index === highlightedIndex ? 'bg-muted' : ''
                   }
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  <SearchResultItem result={result} />
+                  {isStateResult(result) ? (
+                    <StateResultItem result={result} />
+                  ) : (
+                    <FacilityResultItem result={result as FacilityResult} />
+                  )}
                 </div>
               ))}
             </div>
-          ) : query.length >= 2 ? (
+          ) : query.length >= minChars ? (
             <div className="p-4 text-center text-muted-foreground">
               <Building2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p>No facilities found for &quot;{query}&quot;</p>
-              <p className="text-sm mt-1">Try searching by city, state, or facility name</p>
+              {searchType === 'states' ? (
+                <>
+                  <p>No states found for &quot;{query}&quot;</p>
+                  <p className="text-sm mt-1">Try searching by state name or abbreviation</p>
+                </>
+              ) : (
+                <>
+                  <p>No facilities found for &quot;{query}&quot;</p>
+                  <p className="text-sm mt-1">Try searching by facility name</p>
+                </>
+              )}
             </div>
           ) : null}
         </div>

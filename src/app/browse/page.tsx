@@ -161,7 +161,8 @@ export default async function BrowsePage() {
             {/* Search Bar */}
             <div className="max-w-xl">
               <SearchBar
-                placeholder="Search by facility name, city, or state..."
+                searchType="states"
+                placeholder="Search states..."
                 className="w-full"
               />
             </div>
