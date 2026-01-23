@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -24,9 +24,17 @@ interface StateResult {
   facility_count: number;
 }
 
-type SearchResult = FacilityResult | StateResult;
+interface CityResult {
+  id: number;
+  name: string;
+  slug: string;
+  state_code: string;
+  facility_count: number;
+}
 
-// Debounce hook - REQUIRED to avoid API spam
+type SearchResult = FacilityResult | StateResult | CityResult;
+
+// Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
   useEffect(() => {
@@ -36,23 +44,24 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// Portal dropdown - REQUIRED to avoid clipping issues
-// CRITICAL: Must handle mobile screens properly!
+// Portal dropdown
 function DropdownPortal({
   children,
   isOpen,
   inputRef,
+  onClose,
 }: {
   children: React.ReactNode;
   isOpen: boolean;
   inputRef: React.RefObject<HTMLInputElement | null>;
+  onClose: () => void;
 }) {
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration safety pattern
     setMounted(true);
     setIsMobile(window.innerWidth < 768);
   }, []);
@@ -66,8 +75,8 @@ function DropdownPortal({
         setIsMobile(mobile);
         setPosition({
           top: rect.bottom + 8,
-          left: mobile ? 16 : rect.left, // On mobile: 16px from left edge
-          width: mobile ? window.innerWidth - 32 : rect.width, // On mobile: full width minus padding
+          left: mobile ? 16 : rect.left,
+          width: mobile ? window.innerWidth - 32 : rect.width,
         });
       }
     };
@@ -80,9 +89,25 @@ function DropdownPortal({
     };
   }, [isOpen, inputRef]);
 
+  // Handle click outside - check if click is inside dropdown
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      // Don't close if clicking inside the dropdown or input
+      if (dropdownRef.current?.contains(target)) return;
+      if (inputRef.current?.contains(target)) return;
+      onClose();
+    };
+    // Use mousedown with a small delay to let link clicks process first
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [isOpen, inputRef, onClose]);
+
   if (!mounted || !isOpen) return null;
   return createPortal(
     <div
+      ref={dropdownRef}
       className="fixed z-[9999]"
       style={{
         top: position.top,
@@ -101,7 +126,7 @@ function DropdownPortal({
 }
 
 // Facility result item
-function FacilityResultItem({ result }: { result: FacilityResult }) {
+function FacilityResultItem({ result, onClick }: { result: FacilityResult; onClick: () => void }) {
   const facilityTypeLabel =
     result.facility_type === 'SA'
       ? 'Substance Abuse'
@@ -112,14 +137,12 @@ function FacilityResultItem({ result }: { result: FacilityResult }) {
   return (
     <Link
       href={`/facility/${result.slug}`}
-      className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 p-3 hover:bg-muted transition-colors"
+      onClick={onClick}
+      className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 p-3 hover:bg-muted transition-colors block"
     >
-      {/* Title - full width on mobile */}
       <span className="font-medium text-foreground truncate sm:flex-1">
         {result.name}
       </span>
-
-      {/* Metadata row - wraps on mobile */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
           <MapPin className="w-3 h-3" />
@@ -134,11 +157,12 @@ function FacilityResultItem({ result }: { result: FacilityResult }) {
 }
 
 // State result item
-function StateResultItem({ result }: { result: StateResult }) {
+function StateResultItem({ result, onClick }: { result: StateResult; onClick: () => void }) {
   return (
     <Link
       href={`/${result.slug}`}
-      className="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors"
+      onClick={onClick}
+      className="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors block"
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-semibold text-sm">
@@ -153,20 +177,44 @@ function StateResultItem({ result }: { result: StateResult }) {
   );
 }
 
+// City result item
+function CityResultItem({ result, stateSlug, onClick }: { result: CityResult; stateSlug: string; onClick: () => void }) {
+  return (
+    <Link
+      href={`/${stateSlug}/${result.slug}`}
+      onClick={onClick}
+      className="flex items-center justify-between gap-3 p-3 hover:bg-muted transition-colors block"
+    >
+      <div className="flex items-center gap-3">
+        <MapPin className="w-5 h-5 text-primary" />
+        <span className="font-medium text-foreground">{result.name}</span>
+      </div>
+      <span className="text-sm text-muted-foreground">
+        {result.facility_count} facilities
+      </span>
+    </Link>
+  );
+}
+
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
-  searchType?: 'facilities' | 'states';
+  searchType?: 'facilities' | 'states' | 'cities';
+  stateCode?: string; // Filter facilities by state
+  stateSlug?: string; // For city result links
+  citySlug?: string; // Filter facilities by city
 }
 
 export function SearchBar({
   placeholder,
   className = '',
   searchType = 'facilities',
+  stateCode,
+  stateSlug,
+  citySlug,
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -179,15 +227,33 @@ export function SearchBar({
   // Default placeholders based on search type
   const defaultPlaceholder = searchType === 'states'
     ? 'Search states...'
-    : 'Search by facility name...';
+    : searchType === 'cities'
+      ? 'Search cities...'
+      : stateCode
+        ? 'Search facilities in this area...'
+        : 'Search by facility name...';
 
   const actualPlaceholder = placeholder || defaultPlaceholder;
 
   // Minimum characters for search
-  const minChars = searchType === 'states' ? 1 : 2;
+  const minChars = searchType === 'states' || searchType === 'cities' ? 1 : 2;
 
-  // API endpoint based on search type
-  const apiEndpoint = searchType === 'states' ? '/api/search-states' : '/api/search';
+  // Build API endpoint with filters
+  const getApiEndpoint = useCallback(() => {
+    if (searchType === 'states') {
+      return '/api/search-states';
+    }
+    if (searchType === 'cities' && stateCode) {
+      return `/api/search-cities?state=${stateCode}`;
+    }
+    // Facilities with optional state/city filter
+    let endpoint = '/api/search';
+    const params = new URLSearchParams();
+    if (stateCode) params.set('state', stateCode);
+    if (citySlug) params.set('city', citySlug);
+    const paramString = params.toString();
+    return paramString ? `${endpoint}?${paramString}` : endpoint;
+  }, [searchType, stateCode, citySlug]);
 
   // Fetch search results
   useEffect(() => {
@@ -199,8 +265,10 @@ export function SearchBar({
     const fetchResults = async () => {
       setIsLoading(true);
       try {
+        const baseEndpoint = getApiEndpoint();
+        const separator = baseEndpoint.includes('?') ? '&' : '?';
         const res = await fetch(
-          `${apiEndpoint}?q=${encodeURIComponent(debouncedQuery)}`
+          `${baseEndpoint}${separator}q=${encodeURIComponent(debouncedQuery)}`
         );
         const data = await res.json();
         setResults(data.results || []);
@@ -213,20 +281,15 @@ export function SearchBar({
     };
 
     fetchResults();
-  }, [debouncedQuery, apiEndpoint, minChars]);
+  }, [debouncedQuery, getApiEndpoint, minChars]);
 
-  // Click outside to close
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+  const closeDropdown = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const handleResultClick = useCallback(() => {
+    setIsOpen(false);
+    setQuery('');
   }, []);
 
   // Keyboard navigation
@@ -248,27 +311,33 @@ export function SearchBar({
         e.preventDefault();
         if (highlightedIndex >= 0 && results[highlightedIndex]) {
           const result = results[highlightedIndex];
-          if (searchType === 'states') {
-            router.push(`/${(result as StateResult).slug}`);
+          if (isStateResult(result)) {
+            router.push(`/${result.slug}`);
+          } else if (isCityResult(result)) {
+            router.push(`/${stateSlug}/${result.slug}`);
           } else {
             router.push(`/facility/${(result as FacilityResult).slug}`);
           }
-          setIsOpen(false);
+          handleResultClick();
         }
         break;
       case 'Escape':
-        setIsOpen(false);
+        closeDropdown();
         break;
     }
   };
 
-  // Type guard to check if result is a state
+  // Type guards
   const isStateResult = (result: SearchResult): result is StateResult => {
-    return 'code' in result && 'facility_count' in result;
+    return 'code' in result && 'facility_count' in result && !('state_code' in result);
+  };
+
+  const isCityResult = (result: SearchResult): result is CityResult => {
+    return 'state_code' in result && 'facility_count' in result;
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div className={`relative ${className}`}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <input
@@ -284,7 +353,13 @@ export function SearchBar({
           onKeyDown={handleKeyDown}
           placeholder={actualPlaceholder}
           className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
-          aria-label={searchType === 'states' ? 'Search states' : 'Search treatment centers'}
+          aria-label={
+            searchType === 'states'
+              ? 'Search states'
+              : searchType === 'cities'
+                ? 'Search cities'
+                : 'Search treatment centers'
+          }
           autoComplete="off"
         />
         {isLoading && (
@@ -292,7 +367,7 @@ export function SearchBar({
         )}
       </div>
 
-      <DropdownPortal isOpen={isOpen && query.length >= minChars} inputRef={inputRef}>
+      <DropdownPortal isOpen={isOpen && query.length >= minChars} inputRef={inputRef} onClose={closeDropdown}>
         <div className="bg-card border border-border rounded-lg shadow-lg overflow-hidden">
           {isLoading ? (
             <div className="p-4 text-center text-muted-foreground">
@@ -303,16 +378,16 @@ export function SearchBar({
             <div className="divide-y divide-border">
               {results.map((result, index) => (
                 <div
-                  key={isStateResult(result) ? result.id : result.id}
-                  className={
-                    index === highlightedIndex ? 'bg-muted' : ''
-                  }
+                  key={isStateResult(result) ? `state-${result.id}` : isCityResult(result) ? `city-${result.id}` : `facility-${result.id}`}
+                  className={index === highlightedIndex ? 'bg-muted' : ''}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   {isStateResult(result) ? (
-                    <StateResultItem result={result} />
+                    <StateResultItem result={result} onClick={handleResultClick} />
+                  ) : isCityResult(result) ? (
+                    <CityResultItem result={result} stateSlug={stateSlug || ''} onClick={handleResultClick} />
                   ) : (
-                    <FacilityResultItem result={result as FacilityResult} />
+                    <FacilityResultItem result={result as FacilityResult} onClick={handleResultClick} />
                   )}
                 </div>
               ))}
@@ -324,6 +399,11 @@ export function SearchBar({
                 <>
                   <p>No states found for &quot;{query}&quot;</p>
                   <p className="text-sm mt-1">Try searching by state name or abbreviation</p>
+                </>
+              ) : searchType === 'cities' ? (
+                <>
+                  <p>No cities found for &quot;{query}&quot;</p>
+                  <p className="text-sm mt-1">Try searching by city name</p>
                 </>
               ) : (
                 <>

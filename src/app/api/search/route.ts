@@ -5,6 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams.get('q')?.trim() || '';
+  const stateFilter = request.nextUrl.searchParams.get('state')?.trim().toUpperCase() || '';
+  const cityFilter = request.nextUrl.searchParams.get('city')?.trim() || '';
+
   if (!q || q.length < 2) {
     return NextResponse.json({ results: [] });
   }
@@ -15,15 +18,26 @@ export async function GET(request: NextRequest) {
     { auth: { persistSession: false, autoRefreshToken: false } }
   );
 
-  // Search by name, city, or state
-  // Use ilike for case-insensitive partial matching
+  // Search by facility name only (not city/state - those are filters)
   const searchTerm = `%${q}%`;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('facilities')
     .select('id, name, city, state, slug, facility_type')
     .eq('is_indexable', true)
-    .or(`name.ilike.${searchTerm},city.ilike.${searchTerm},state.ilike.${searchTerm}`)
+    .ilike('name', searchTerm);
+
+  // Apply state filter if provided
+  if (stateFilter) {
+    query = query.eq('state', stateFilter);
+  }
+
+  // Apply city filter if provided
+  if (cityFilter) {
+    query = query.eq('city_slug', cityFilter);
+  }
+
+  const { data, error } = await query
     .order('dqs', { ascending: false })
     .limit(20);
 

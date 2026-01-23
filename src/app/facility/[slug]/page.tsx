@@ -290,77 +290,64 @@ export default async function FacilityPage({ params }: PageProps) {
                 <h2 className="text-lg font-semibold text-foreground mb-4">Contact & Location</h2>
 
                 <div className="flex flex-col md:flex-row gap-5">
-                  {/* Left: Contact Info & Buttons */}
-                  <div className="flex-1 min-w-0">
-                    {/* Contact Info */}
-                    <div className="space-y-3 mb-4">
-                      {facility.phone && (
-                        <a href={`tel:${facility.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                          <Phone className="w-5 h-5 text-primary shrink-0" />
-                          <div>
-                            <span className="font-medium">{facility.phone}</span>
-                            <span className="text-sm text-muted-foreground ml-2">Main</span>
-                          </div>
-                        </a>
-                      )}
-                      {facility.intake_phone && facility.intake_phone !== facility.phone && (
-                        <a href={`tel:${facility.intake_phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                          <Phone className="w-5 h-5 text-secondary shrink-0" />
-                          <div>
-                            <span className="font-medium">{facility.intake_phone}</span>
-                            <span className="text-sm text-muted-foreground ml-2">Intake</span>
-                          </div>
-                        </a>
-                      )}
-                      {facility.hotline && (
-                        <a href={`tel:${facility.hotline}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                          <Clock className="w-5 h-5 text-accent shrink-0" />
-                          <div>
-                            <span className="font-medium">{facility.hotline}</span>
-                            <span className="text-sm text-muted-foreground ml-2">24/7 Hotline</span>
-                          </div>
-                        </a>
-                      )}
-                      {facility.website && (
-                        <a href={facility.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                          <Globe className="w-5 h-5 text-muted-foreground shrink-0" />
-                          <span className="font-medium flex items-center gap-1">
-                            Visit Website <ExternalLink className="w-3 h-3" />
-                          </span>
-                        </a>
-                      )}
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <a
-                        href={directionsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
-                      >
-                        <Navigation className="w-4 h-4" />
-                        Get Directions
+                  {/* Left: All contact items as list */}
+                  <div className="flex-1 min-w-0 space-y-3">
+                    {facility.phone && (
+                      <a href={`tel:${facility.phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Phone className="w-5 h-5 text-primary shrink-0" />
+                        <div>
+                          <span className="font-medium">{facility.phone}</span>
+                          <span className="text-sm text-muted-foreground ml-2">Main</span>
+                        </div>
                       </a>
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg hover:bg-muted transition-colors font-medium text-foreground text-sm"
-                      >
-                        <MapPin className="w-4 h-4" />
-                        View on Map
+                    )}
+                    {facility.intake_phone && facility.intake_phone !== facility.phone && (
+                      <a href={`tel:${facility.intake_phone}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Phone className="w-5 h-5 text-secondary shrink-0" />
+                        <div>
+                          <span className="font-medium">{facility.intake_phone}</span>
+                          <span className="text-sm text-muted-foreground ml-2">Intake</span>
+                        </div>
                       </a>
-                    </div>
+                    )}
+                    {facility.hotline && (
+                      <a href={`tel:${facility.hotline}`} className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Clock className="w-5 h-5 text-accent shrink-0" />
+                        <div>
+                          <span className="font-medium">{facility.hotline}</span>
+                          <span className="text-sm text-muted-foreground ml-2">24/7 Hotline</span>
+                        </div>
+                      </a>
+                    )}
+                    {facility.website && (
+                      <a href={facility.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                        <Globe className="w-5 h-5 text-muted-foreground shrink-0" />
+                        <span className="font-medium flex items-center gap-1">
+                          Visit Website <ExternalLink className="w-3 h-3" />
+                        </span>
+                      </a>
+                    )}
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <Navigation className="w-5 h-5 text-primary shrink-0" />
+                      <span className="font-medium flex items-center gap-1">
+                        Get Directions <ExternalLink className="w-3 h-3" />
+                      </span>
+                    </a>
+                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+                      <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
+                      <span className="font-medium flex items-center gap-1">
+                        View on Map <ExternalLink className="w-3 h-3" />
+                      </span>
+                    </a>
                   </div>
 
                   {/* Right: Map Preview */}
-                  <div className="md:w-[280px] shrink-0">
+                  <div className="md:w-[320px] md:h-[220px] shrink-0">
                     <a
                       href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full h-[180px] md:h-full rounded-lg overflow-hidden border border-border bg-muted relative group"
+                      className="block w-full h-[200px] md:h-full rounded-lg overflow-hidden border border-border bg-muted relative group"
                     >
                       {facility.latitude && facility.longitude ? (
                         <iframe

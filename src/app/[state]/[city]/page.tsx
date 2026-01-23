@@ -272,6 +272,9 @@ export default async function CityPage({ params }: PageProps) {
               <SearchBar
                 placeholder={`Search facilities in ${city.name}...`}
                 className="w-full"
+                stateCode={state.code}
+                stateSlug={state.slug}
+                citySlug={city.slug}
               />
             </div>
 

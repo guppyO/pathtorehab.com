@@ -242,8 +242,10 @@ export default async function StatePage({ params }: PageProps) {
             {/* Search Bar */}
             <div className="max-w-xl">
               <SearchBar
-                placeholder={`Search treatment centers in ${state.name}...`}
+                placeholder={`Search facilities in ${state.name}...`}
                 className="w-full"
+                stateCode={state.code}
+                stateSlug={state.slug}
               />
             </div>
 

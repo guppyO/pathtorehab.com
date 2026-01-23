@@ -102,7 +102,8 @@ export default async function HomePage() {
             {/* Search Bar */}
             <div className="max-w-xl mx-auto">
               <SearchBar
-                placeholder="Search by facility name, city, or state..."
+                searchType="states"
+                placeholder="Search by state name..."
                 className="w-full"
               />
             </div>
