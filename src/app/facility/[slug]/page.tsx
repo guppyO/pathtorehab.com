@@ -287,39 +287,9 @@ export default async function FacilityPage({ params }: PageProps) {
 
               {/* Contact & Location Card */}
               <div className="bg-card rounded-xl border border-border overflow-hidden mb-6">
-                {/* Map - Full width at top */}
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full h-[280px] bg-muted relative group"
-                >
-                  {facility.latitude && facility.longitude ? (
-                    <iframe
-                      src={`https://maps.google.com/maps?q=${facility.latitude},${facility.longitude}&z=15&output=embed`}
-                      className="w-full h-full pointer-events-none"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title={`Map showing ${facility.name}`}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50">
-                      <MapPin className="w-10 h-10 text-primary mb-2" />
-                      <span className="text-muted-foreground">Click to view on Google Maps</span>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2">
-                      <ExternalLink className="w-4 h-4" />
-                      Open in Google Maps
-                    </span>
-                  </div>
-                </a>
-
-                {/* Contact Info - Below map */}
-                <div className="p-5">
-                  <div className="flex flex-wrap gap-x-8 gap-y-3">
+                {/* Contact Info - Above map (primary actions) */}
+                <div className="p-5 border-b border-border">
+                  <div className="flex flex-wrap gap-x-6 gap-y-3">
                     {facility.phone && (
                       <a href={`tel:${facility.phone}`} className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
                         <Phone className="w-4 h-4 text-primary" />
@@ -353,6 +323,42 @@ export default async function FacilityPage({ params }: PageProps) {
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
+                </div>
+
+                {/* Interactive Map - Below contact info */}
+                <div className="relative w-full h-[300px] bg-muted">
+                  {facility.latitude && facility.longitude ? (
+                    <>
+                      <iframe
+                        src={`https://maps.google.com/maps?q=${facility.latitude},${facility.longitude}&z=15&output=embed`}
+                        className="w-full h-full"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={`Map showing ${facility.name}`}
+                        allowFullScreen
+                      />
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-3 right-3 bg-white dark:bg-slate-800 text-foreground px-3 py-1.5 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-shadow flex items-center gap-1.5"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Open in Maps
+                      </a>
+                    </>
+                  ) : (
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-full flex flex-col items-center justify-center bg-muted/50 hover:bg-muted transition-colors"
+                    >
+                      <MapPin className="w-10 h-10 text-primary mb-2" />
+                      <span className="text-muted-foreground">View on Google Maps</span>
+                    </a>
+                  )}
                 </div>
               </div>
 
