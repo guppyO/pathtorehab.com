@@ -268,7 +268,10 @@ export default async function FacilityPage({ params }: PageProps) {
         {/* Main content */}
         <div className="px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Main content area */}
+            {/* Left spacer - matches right sidebar width for symmetry */}
+            <div className="hidden lg:block lg:w-[300px] shrink-0" />
+
+            {/* Main content area - centered between equal gaps */}
             <main className="flex-1 min-w-0">
               {/* Facility Header */}
               <header className="mb-6">
