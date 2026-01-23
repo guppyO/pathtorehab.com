@@ -78,21 +78,21 @@ function FacilityTypeBadge({ type }: { type: string | null }) {
   );
 }
 
-// Service category display
+// Service category display - Compact
 function ServiceSection({ title, items, icon: Icon }: { title: string; items: string[]; icon: React.ElementType }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      <h3 className="flex items-center gap-2 font-semibold text-foreground">
-        <Icon className="w-5 h-5 text-primary" />
+    <div className="space-y-2">
+      <h3 className="flex items-center gap-1.5 font-medium text-sm text-foreground">
+        <Icon className="w-4 h-4 text-primary" />
         {title}
       </h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {items.map((item, i) => (
           <span
             key={i}
-            className="px-3 py-1.5 bg-muted rounded-lg text-sm text-muted-foreground"
+            className="px-2.5 py-1 bg-muted rounded-md text-xs text-muted-foreground"
           >
             {item}
           </span>
@@ -102,7 +102,7 @@ function ServiceSection({ title, items, icon: Icon }: { title: string; items: st
   );
 }
 
-// Google Maps component
+// Google Maps component - Compact version
 function FacilityMap({ address, lat, lng, name }: { address: string; lat: number | null; lng: number | null; name: string }) {
   // Use coordinates if available, otherwise use address
   const query = lat && lng
@@ -116,22 +116,22 @@ function FacilityMap({ address, lat, lng, name }: { address: string; lat: number
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden mb-8">
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-primary" />
+      <div className="p-3 border-b border-border flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <MapPin className="w-4 h-4 text-primary" />
           Location
         </h2>
         <a
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
         >
-          <Navigation className="w-4 h-4" />
-          Get Directions
+          <Navigation className="w-3.5 h-3.5" />
+          Directions
         </a>
       </div>
-      <div className="aspect-video md:aspect-[2/1]">
+      <div className="aspect-[2/1] md:aspect-[3/1] max-h-[200px]">
         <iframe
           src={mapUrl}
           width="100%"
@@ -144,14 +144,22 @@ function FacilityMap({ address, lat, lng, name }: { address: string; lat: number
           className="w-full h-full"
         />
       </div>
-      <div className="p-4 bg-muted/30">
-        <p className="text-sm text-muted-foreground">{address}</p>
+      <div className="px-3 py-2 bg-muted/30 flex items-center justify-between">
+        <p className="text-sm text-muted-foreground truncate">{address}</p>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${query}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-primary hover:underline shrink-0 ml-2"
+        >
+          Open in Maps
+        </a>
       </div>
     </div>
   );
 }
 
-// Questions to ask section
+// Questions to ask section - Compact
 function QuestionsToAsk() {
   const questions = [
     "What types of treatment programs do you offer?",
@@ -165,18 +173,18 @@ function QuestionsToAsk() {
   ];
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6 mb-8">
-      <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-        <HelpCircle className="w-5 h-5 text-primary" />
+    <div className="bg-card rounded-xl border border-border p-4 mb-6">
+      <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+        <HelpCircle className="w-4 h-4 text-primary" />
         Questions to Ask When You Call
       </h2>
-      <p className="text-muted-foreground mb-4">
-        When contacting this facility, consider asking these important questions to help you make an informed decision:
+      <p className="text-sm text-muted-foreground mb-3">
+        Consider asking these questions when you contact this facility:
       </p>
-      <ul className="space-y-3">
+      <ul className="grid gap-2 sm:grid-cols-2">
         {questions.map((question, i) => (
-          <li key={i} className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <li key={i} className="flex items-start gap-2 text-sm">
+            <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <span className="text-foreground">{question}</span>
           </li>
         ))}
@@ -185,41 +193,41 @@ function QuestionsToAsk() {
   );
 }
 
-// Crisis helpline banner
+// Crisis helpline banner - Compact
 function CrisisHelpline() {
   return (
-    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20 p-6 mb-8">
-      <div className="flex items-start gap-4">
-        <div className="p-3 bg-primary/10 rounded-full shrink-0">
-          <AlertCircle className="w-6 h-6 text-primary" />
+    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl border border-primary/20 p-4 mb-6">
+      <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+        <div className="p-2 bg-primary/10 rounded-full shrink-0">
+          <AlertCircle className="w-5 h-5 text-primary" />
         </div>
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-2">Need Immediate Help?</h2>
-          <p className="text-muted-foreground mb-3">
-            SAMHSA&apos;s National Helpline is a free, confidential, 24/7, 365-day-a-year treatment referral and information service.
+        <div className="flex-1 min-w-0">
+          <h2 className="text-base font-semibold text-foreground">Need Immediate Help?</h2>
+          <p className="text-sm text-muted-foreground">
+            SAMHSA&apos;s National Helpline - Free, confidential, 24/7
           </p>
-          <a
-            href="tel:1-800-662-4357"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-          >
-            <Phone className="w-4 h-4" />
-            Call 1-800-662-4357
-          </a>
         </div>
+        <a
+          href="tel:1-800-662-4357"
+          className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium shrink-0"
+        >
+          <Phone className="w-4 h-4" />
+          1-800-662-4357
+        </a>
       </div>
     </div>
   );
 }
 
-// Related facility card
+// Related facility card - Compact
 function RelatedFacilityCard({ facility }: { facility: Facility }) {
   return (
     <Link
       href={`/facility/${facility.slug}`}
-      className="block p-4 bg-card rounded-lg border border-border hover:border-primary/50 transition-colors"
+      className="block p-3 bg-muted/30 rounded-lg border border-border hover:border-primary/50 transition-colors"
     >
-      <h3 className="font-medium text-foreground line-clamp-1 text-base">{facility.name}</h3>
-      <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+      <h3 className="font-medium text-foreground line-clamp-1 text-sm">{facility.name}</h3>
+      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
         <MapPin className="w-3 h-3" />
         {facility.city}, {facility.state}
       </p>
@@ -306,59 +314,61 @@ export default async function FacilityPage({ params }: PageProps) {
             {/* Main content area */}
             <main className="flex-1 min-w-0">
               {/* Header */}
-              <header className="mb-8">
-                <FacilityTypeBadge type={facility.facility_type} />
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-4 mb-3">
+              <header className="mb-6">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <FacilityTypeBadge type={facility.facility_type} />
+                  {facility.name_alt && (
+                    <span className="text-sm text-muted-foreground">
+                      AKA: {facility.name_alt}
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                   {facility.name}
                 </h1>
-                {facility.name_alt && (
-                  <p className="text-lg text-muted-foreground mb-3">
-                    Also known as: {facility.name_alt}
-                  </p>
-                )}
-                <p className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-5 h-5 text-primary" />
+                <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
                   {fullAddress}
                 </p>
               </header>
 
-              {/* Contact card */}
-              <div className="bg-card rounded-xl border border-border p-6 mb-8">
-                <h2 className="text-xl font-semibold text-foreground mb-4">Contact Information</h2>
-                <div className="grid gap-4 sm:grid-cols-2">
+              {/* Contact card - Compact */}
+              <div className="bg-card rounded-xl border border-border p-4 mb-6">
+                <h2 className="text-lg font-semibold text-foreground mb-3">Contact Information</h2>
+                <div className="grid gap-2 sm:grid-cols-2">
                   {facility.phone && (
                     <a
                       href={`tel:${facility.phone}`}
-                      className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg hover:bg-primary/10 transition-colors"
+                      className="flex items-center gap-2.5 p-3 bg-primary/5 rounded-lg hover:bg-primary/10 transition-colors"
                     >
-                      <Phone className="w-5 h-5 text-primary" />
+                      <Phone className="w-4 h-4 text-primary" />
                       <div>
-                        <p className="text-sm text-muted-foreground">Main Phone</p>
-                        <p className="font-medium text-foreground">{facility.phone}</p>
+                        <p className="text-xs text-muted-foreground">Main Phone</p>
+                        <p className="font-medium text-foreground text-sm">{facility.phone}</p>
                       </div>
                     </a>
                   )}
                   {facility.intake_phone && (
                     <a
                       href={`tel:${facility.intake_phone}`}
-                      className="flex items-center gap-3 p-4 bg-secondary/5 rounded-lg hover:bg-secondary/10 transition-colors"
+                      className="flex items-center gap-2.5 p-3 bg-secondary/5 rounded-lg hover:bg-secondary/10 transition-colors"
                     >
-                      <Phone className="w-5 h-5 text-secondary" />
+                      <Phone className="w-4 h-4 text-secondary" />
                       <div>
-                        <p className="text-sm text-muted-foreground">Intake Line</p>
-                        <p className="font-medium text-foreground">{facility.intake_phone}</p>
+                        <p className="text-xs text-muted-foreground">Intake Line</p>
+                        <p className="font-medium text-foreground text-sm">{facility.intake_phone}</p>
                       </div>
                     </a>
                   )}
                   {facility.hotline && (
                     <a
                       href={`tel:${facility.hotline}`}
-                      className="flex items-center gap-3 p-4 bg-accent/5 rounded-lg hover:bg-accent/10 transition-colors"
+                      className="flex items-center gap-2.5 p-3 bg-accent/5 rounded-lg hover:bg-accent/10 transition-colors"
                     >
-                      <Clock className="w-5 h-5 text-accent" />
+                      <Clock className="w-4 h-4 text-accent" />
                       <div>
-                        <p className="text-sm text-muted-foreground">24/7 Hotline</p>
-                        <p className="font-medium text-foreground">{facility.hotline}</p>
+                        <p className="text-xs text-muted-foreground">24/7 Hotline</p>
+                        <p className="font-medium text-foreground text-sm">{facility.hotline}</p>
                       </div>
                     </a>
                   )}
@@ -367,12 +377,12 @@ export default async function FacilityPage({ params }: PageProps) {
                       href={facility.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                      className="flex items-center gap-2.5 p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                     >
-                      <Globe className="w-5 h-5 text-muted-foreground" />
+                      <Globe className="w-4 h-4 text-muted-foreground" />
                       <div className="min-w-0">
-                        <p className="text-sm text-muted-foreground">Website</p>
-                        <p className="font-medium text-foreground truncate flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground">Website</p>
+                        <p className="font-medium text-foreground text-sm truncate flex items-center gap-1">
                           Visit Website <ExternalLink className="w-3 h-3" />
                         </p>
                       </div>
@@ -389,13 +399,10 @@ export default async function FacilityPage({ params }: PageProps) {
                 name={facility.name}
               />
 
-              {/* In-content ad */}
-              <InContentAd />
-
               {/* Services section */}
-              <div className="bg-card rounded-xl border border-border p-6 mb-8">
-                <h2 className="text-xl font-semibold text-foreground mb-6">Services & Programs</h2>
-                <div className="space-y-6">
+              <div className="bg-card rounded-xl border border-border p-4 mb-6">
+                <h2 className="text-lg font-semibold text-foreground mb-4">Services & Programs</h2>
+                <div className="space-y-4">
                   <ServiceSection
                     title="Type of Care"
                     items={facility.type_of_care || []}
@@ -424,6 +431,9 @@ export default async function FacilityPage({ params }: PageProps) {
                 </div>
               </div>
 
+              {/* In-content ad */}
+              <InContentAd />
+
               {/* Questions to Ask */}
               <QuestionsToAsk />
 
@@ -432,22 +442,24 @@ export default async function FacilityPage({ params }: PageProps) {
 
               {/* Related facilities */}
               {otherFacilities.length > 0 && (
-                <div className="bg-card rounded-xl border border-border p-6">
-                  <h2 className="text-xl font-semibold text-foreground mb-4">
-                    Other Facilities in {facility.city}
-                  </h2>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                <div className="bg-card rounded-xl border border-border p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-lg font-semibold text-foreground">
+                      Other Facilities in {facility.city}
+                    </h2>
+                    <Link
+                      href={`/${facility.state.toLowerCase()}/${facility.city_slug}`}
+                      className="text-sm text-primary hover:underline flex items-center gap-0.5"
+                    >
+                      View all
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {otherFacilities.map((f) => (
                       <RelatedFacilityCard key={f.id} facility={f} />
                     ))}
                   </div>
-                  <Link
-                    href={`/${facility.state.toLowerCase()}/${facility.city_slug}`}
-                    className="mt-4 inline-flex items-center gap-1 text-primary hover:underline"
-                  >
-                    View all facilities in {facility.city}
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
                 </div>
               )}
             </main>
