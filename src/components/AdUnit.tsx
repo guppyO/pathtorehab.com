@@ -1,7 +1,7 @@
 'use client';
 
-// Ad placeholders - hidden until real AdSense is configured
-// To enable: set NEXT_PUBLIC_ADSENSE_ID in .env and uncomment the ad code
+// Ad placeholders - cleaner design
+// Replace with actual AdSense code when configured
 
 interface AdUnitProps {
   slot: string;
@@ -10,22 +10,38 @@ interface AdUnitProps {
 }
 
 export function AdUnit({ slot, format = 'auto', className = '' }: AdUnitProps) {
-  // Hidden until AdSense is configured
-  // When ready, replace with actual Google AdSense code
-  return null;
+  const height = format === 'rectangle' ? 'h-[250px]' : 'h-[90px]';
+  return (
+    <div
+      className={`bg-muted/50 border border-dashed border-border rounded-lg flex items-center justify-center ${height} ${className}`}
+      data-ad-slot={slot}
+      data-ad-format={format}
+    >
+      <span className="text-xs text-muted-foreground/50">Advertisement</span>
+    </div>
+  );
 }
 
 export function SidebarAd() {
-  // Hidden until AdSense is configured
-  return null;
+  return (
+    <div className="hidden lg:block sticky top-4">
+      <AdUnit slot="sidebar-1" format="rectangle" className="w-[300px]" />
+    </div>
+  );
 }
 
 export function InContentAd() {
-  // Hidden until AdSense is configured
-  return null;
+  return (
+    <div className="my-4">
+      <AdUnit slot="in-content-1" format="horizontal" className="w-full" />
+    </div>
+  );
 }
 
 export function HeroAd() {
-  // Hidden until AdSense is configured
-  return null;
+  return (
+    <div className="my-4">
+      <AdUnit slot="hero-below-1" format="horizontal" className="w-full" />
+    </div>
+  );
 }
