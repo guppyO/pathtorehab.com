@@ -131,7 +131,7 @@ function FacilityMap({ address, lat, lng, name }: { address: string; lat: number
           Get Directions
         </a>
       </div>
-      <div className="aspect-[16/9] md:aspect-[21/9]">
+      <div className="aspect-video md:aspect-[2/1]">
         <iframe
           src={mapUrl}
           width="100%"

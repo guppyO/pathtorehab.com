@@ -105,6 +105,12 @@
       "city": ["SidebarAd", "InContentAd"],
       "browse": ["SidebarAd"],
       "home": ["HeroAd", "SidebarAd"]
+    },
+    "facility_enhancements": {
+      "google_maps": "Interactive map embed using coordinates or address",
+      "get_directions": "Button linking to Google Maps directions",
+      "questions_to_ask": "8 key questions when calling facilities",
+      "crisis_helpline": "SAMHSA National Helpline banner (1-800-662-4357)"
     }
   },
   "data_integration": {

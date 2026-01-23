@@ -300,7 +300,7 @@ export default async function StatePage({ params }: PageProps) {
               </h2>
               {cities.length > 0 ? (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {cities.slice(0, 30).map((city) => (
+                  {cities.map((city) => (
                     <CityCard
                       key={city.id}
                       name={city.name}
@@ -313,21 +313,6 @@ export default async function StatePage({ params }: PageProps) {
               ) : (
                 <p className="text-muted-foreground">No cities found with treatment centers.</p>
               )}
-
-              {cities.length > 30 && (
-                <div className="mt-6 text-center">
-                  <p className="text-muted-foreground mb-4">
-                    Showing 30 of {cities.length} cities with treatment centers
-                  </p>
-                  <Link
-                    href={`/${state.slug}/cities`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                  >
-                    View All Cities
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              )}
             </section>
           </div>
 
@@ -339,15 +324,19 @@ export default async function StatePage({ params }: PageProps) {
             <div className="mt-8 p-6 bg-secondary/5 rounded-xl border border-secondary/20">
               <Heart className="w-8 h-8 text-secondary mb-4" />
               <h3 className="font-semibold text-foreground mb-2">Need Help Now?</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                SAMHSA National Helpline is available 24/7, 365 days a year.
+              <p className="text-sm text-muted-foreground mb-3">
+                SAMHSA National Helpline - free, confidential, 24/7, 365 days a year.
               </p>
               <a
                 href="tel:1-800-662-4357"
-                className="block text-center py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors"
+                className="flex items-center justify-center gap-2 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors"
               >
-                Call 1-800-662-4357
+                <Phone className="w-4 h-4" />
+                1-800-662-4357
               </a>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Tap to call on mobile
+              </p>
             </div>
 
             {/* State Info */}
@@ -387,9 +376,8 @@ export default async function StatePage({ params }: PageProps) {
             <div>
               <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/browse" className="hover:text-foreground transition-colors">Browse All</Link></li>
-                <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
+                <li><Link href="/browse" className="hover:text-foreground transition-colors">Browse All States</Link></li>
+                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
               </ul>
             </div>
             <div>
