@@ -78,12 +78,13 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* AdSense - Replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID */}
+        {/* AdSense - Uncomment and replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID when ready
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
           crossOrigin="anonymous"
         />
+        */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
