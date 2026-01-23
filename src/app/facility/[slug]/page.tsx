@@ -118,7 +118,7 @@ function ServiceCategory({
             key={i}
             className={`px-3 py-1.5 rounded-lg text-sm ${
               highlight
-                ? 'bg-primary/10 text-primary-foreground/80'
+                ? 'bg-primary/20 text-foreground border border-primary/30'
                 : 'bg-background text-muted-foreground'
             }`}
           >
