@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
     default: 'Path To Rehab - Find Addiction & Mental Health Treatment Centers',
     template: '%s | Path To Rehab',
   },
-  description: 'Find drug rehab, alcohol treatment, and mental health facilities near you. Browse 98,000+ SAMHSA-listed treatment centers with verified services, payment options, and contact information.',
+  description: 'Find drug rehab, alcohol treatment, and mental health facilities near you. Browse 15,000+ SAMHSA-verified treatment centers with verified services, payment options, and contact information.',
   keywords: [
     'drug rehab',
     'alcohol rehab',
@@ -53,7 +55,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: 'Path To Rehab',
     title: 'Path To Rehab - Find Addiction & Mental Health Treatment Centers',
-    description: 'Find drug rehab, alcohol treatment, and mental health facilities near you. Browse 98,000+ SAMHSA-listed treatment centers.',
+    description: 'Find drug rehab, alcohol treatment, and mental health facilities near you. Browse 15,000+ SAMHSA-verified treatment centers.',
   },
   twitter: {
     card: 'summary_large_image',
@@ -61,7 +63,7 @@ export const metadata: Metadata = {
     description: 'Find drug rehab, alcohol treatment, and mental health facilities near you.',
   },
   verification: {
-    google: 'VERIFICATION_CODE_PLACEHOLDER',
+    google: 'GxTgzHZJvtnmv83aas_WTuwCMMzOdvD7Qan-yHkJBb4',
   },
   alternates: {
     canonical: SITE_URL,
@@ -78,13 +80,12 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* AdSense - Uncomment and replace ca-pub-XXXXXXXXXXXXXXXX with your publisher ID when ready
+        {/* Google AdSense */}
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226435955298586"
           crossOrigin="anonymous"
         />
-        */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -92,6 +93,8 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
