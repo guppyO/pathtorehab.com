@@ -1,19 +1,10 @@
-name: Update Data
+name: Update SAMHSA Data
 
 on:
   schedule:
-    # Monthly on the 15th at 6am UTC
-    - cron: '0 6 15 * *'
-  workflow_dispatch:
-    inputs:
-      force_update:
-        description: 'Force update even if no new data'
-        required: false
-        default: 'false'
-        type: boolean
-
-env:
-  NODE_VERSION: '20'
+    # Run weekly on Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   update-data:
@@ -26,46 +17,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Download latest data
-        id: download
-        run: |
-          npx tsx scripts/download-data.ts
-          if [ -f "data/metadata.json" ]; then
-            RECORD_COUNT=$(cat data/metadata.json | jq -r '.recordCount')
-            echo "record_count=$RECORD_COUNT" >> $GITHUB_OUTPUT
-            echo "has_data=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_data=false" >> $GITHUB_OUTPUT
-          fi
+      - name: Download latest SAMHSA data
+        run: npx tsx scripts/download-data.ts
 
-      - name: Check for changes
-        id: changes
-        run: |
-          git diff --quiet data/ || echo "data_changed=true" >> $GITHUB_OUTPUT
-
-      - name: Ingest to database
-        if: steps.changes.outputs.data_changed == 'true' || inputs.force_update == 'true'
+      - name: Ingest data to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          echo "SUPABASE_URL=$SUPABASE_URL" > Supabase.txt
-          echo "SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> Supabase.txt
-          npx tsx scripts/ingest-data.ts --truncate
-          npx tsx scripts/fix-counts.ts
-          rm Supabase.txt
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/ingest-data.ts
 
-      - name: Commit updated data
-        if: steps.changes.outputs.data_changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
-          git commit -m "chore: update data (${{ steps.download.outputs.record_count }} records)"
-          git push
+      - name: Fix facility counts
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/fix-counts.ts
