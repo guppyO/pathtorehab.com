@@ -24,7 +24,7 @@ export function AdUnit({ slot, format = 'auto', className = '' }: AdUnitProps) {
 
 export function SidebarAd() {
   return (
-    <div className="hidden lg:block sticky top-4">
+    <div className="hidden lg:block sticky top-20">
       <AdUnit slot="sidebar-1" format="rectangle" className="w-[300px]" />
     </div>
   );
