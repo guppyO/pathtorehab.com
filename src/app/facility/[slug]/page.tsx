@@ -78,9 +78,17 @@ function FacilityTypeBadge({ type }: { type: string | null }) {
   );
 }
 
-// Service category display - Compact
+// Service category display - Compact with proper tag splitting
 function ServiceSection({ title, items, icon: Icon }: { title: string; items: string[]; icon: React.ElementType }) {
   if (!items || items.length === 0) return null;
+
+  // Split semicolon-separated strings into individual tags and clean them up
+  const tags = items
+    .flatMap(item => item.split(';'))
+    .map(tag => tag.trim())
+    .filter(tag => tag.length > 0 && tag.length < 80); // Filter out empty and overly long items
+
+  if (tags.length === 0) return null;
 
   return (
     <div className="space-y-2">
@@ -89,106 +97,91 @@ function ServiceSection({ title, items, icon: Icon }: { title: string; items: st
         {title}
       </h3>
       <div className="flex flex-wrap gap-1.5">
-        {items.map((item, i) => (
+        {tags.slice(0, 12).map((tag, i) => (
           <span
             key={i}
-            className="px-2.5 py-1 bg-muted rounded-md text-xs text-muted-foreground"
+            className="px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground"
           >
-            {item}
+            {tag}
           </span>
         ))}
+        {tags.length > 12 && (
+          <span className="px-2 py-0.5 text-xs text-muted-foreground">
+            +{tags.length - 12} more
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-// Google Maps component - Compact version
-function FacilityMap({ address, lat, lng, name }: { address: string; lat: number | null; lng: number | null; name: string }) {
-  // Use coordinates if available, otherwise use address
-  const query = lat && lng
-    ? `${lat},${lng}`
-    : encodeURIComponent(address);
+// Location section - Clean, compact design without iframe
+function FacilityLocation({ address, lat, lng }: { address: string; lat: number | null; lng: number | null }) {
+  const mapsUrl = lat && lng
+    ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
-  const mapUrl = `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   const directionsUrl = lat && lng
     ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
 
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden mb-8">
-      <div className="p-3 border-b border-border flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" />
-          Location
-        </h2>
-        <a
-          href={directionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-        >
-          <Navigation className="w-3.5 h-3.5" />
-          Directions
-        </a>
-      </div>
-      <div className="aspect-[2/1] md:aspect-[3/1] max-h-[200px]">
-        <iframe
-          src={mapUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title={`Map showing location of ${name}`}
-          className="w-full h-full"
-        />
-      </div>
-      <div className="px-3 py-2 bg-muted/30 flex items-center justify-between">
-        <p className="text-sm text-muted-foreground truncate">{address}</p>
-        <a
-          href={`https://www.google.com/maps/search/?api=1&query=${query}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-primary hover:underline shrink-0 ml-2"
-        >
-          Open in Maps
-        </a>
+    <div className="bg-card rounded-xl border border-border p-4 mb-6">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-2">
+            <MapPin className="w-4 h-4 text-primary" />
+            Location
+          </h2>
+          <p className="text-sm text-muted-foreground">{address}</p>
+        </div>
+        <div className="flex flex-col gap-2 shrink-0">
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+          >
+            <Navigation className="w-4 h-4" />
+            Directions
+          </a>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm text-foreground"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View Map
+          </a>
+        </div>
       </div>
     </div>
   );
 }
 
-// Questions to ask section - Compact
+// Questions to ask section - Ultra compact
 function QuestionsToAsk() {
   const questions = [
-    "What types of treatment programs do you offer?",
-    "Do you accept my insurance? What are the out-of-pocket costs?",
-    "What is the length of your treatment program?",
-    "What credentials do your staff members have?",
-    "Do you offer detox services on-site?",
-    "What is your approach to treatment (12-step, holistic, etc.)?",
-    "Do you offer family therapy or involvement in treatment?",
-    "What aftercare support do you provide?",
+    "What treatment programs do you offer?",
+    "Do you accept my insurance?",
+    "What is the program length?",
+    "Do you offer detox on-site?",
   ];
 
   return (
-    <div className="bg-card rounded-xl border border-border p-4 mb-6">
-      <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+    <div className="bg-muted/30 rounded-xl border border-border p-4 mb-6">
+      <h3 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
         <HelpCircle className="w-4 h-4 text-primary" />
-        Questions to Ask When You Call
-      </h2>
-      <p className="text-sm text-muted-foreground mb-3">
-        Consider asking these questions when you contact this facility:
-      </p>
-      <ul className="grid gap-2 sm:grid-cols-2">
+        Questions to Ask
+      </h3>
+      <div className="flex flex-wrap gap-2">
         {questions.map((question, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm">
-            <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <span className="text-foreground">{question}</span>
-          </li>
+          <span key={i} className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">
+            {question}
+          </span>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
@@ -391,12 +384,11 @@ export default async function FacilityPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Location Map */}
-              <FacilityMap
+              {/* Location */}
+              <FacilityLocation
                 address={fullAddress}
                 lat={facility.latitude}
                 lng={facility.longitude}
-                name={facility.name}
               />
 
               {/* Services section */}
