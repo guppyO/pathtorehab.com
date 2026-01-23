@@ -17,7 +17,7 @@ export function AdUnit({ slot, format = 'auto', className = '' }: AdUnitProps) {
       data-ad-slot={slot}
       data-ad-format={format}
     >
-      <span className="text-xs text-muted-foreground/50">Advertisement</span>
+      <span className="text-xs text-muted-foreground">Advertisement</span>
     </div>
   );
 }
