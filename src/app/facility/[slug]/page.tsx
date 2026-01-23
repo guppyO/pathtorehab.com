@@ -266,7 +266,7 @@ export default async function FacilityPage({ params }: PageProps) {
         </div>
 
         {/* Main content */}
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main content area */}
             <main className="flex-1 min-w-0">
