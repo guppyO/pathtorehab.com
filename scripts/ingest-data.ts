@@ -490,20 +490,40 @@ async function main(): Promise<void> {
 
   // Step 2: Transform facilities
   console.log('🔄 Transforming facility data...\n');
-  const facilities: FacilityRecord[] = [];
+  const allFacilities: FacilityRecord[] = [];
   let skipped = 0;
 
   for (let i = 0; i < rawFacilities.length; i++) {
     const transformed = transformFacility(rawFacilities[i], i);
     if (transformed) {
-      facilities.push(transformed);
+      allFacilities.push(transformed);
     } else {
       skipped++;
     }
   }
 
-  console.log(`  Transformed: ${facilities.length}`);
+  console.log(`  Transformed: ${allFacilities.length}`);
   console.log(`  Skipped (missing required fields): ${skipped}\n`);
+
+  // Step 2b: Deduplicate facilities (same name + address + city + state + phone)
+  console.log('🔄 Deduplicating facilities...\n');
+  const seen = new Map<string, FacilityRecord>();
+
+  // Sort by DQS descending so we keep the highest quality record
+  allFacilities.sort((a, b) => b.dqs - a.dqs);
+
+  for (const facility of allFacilities) {
+    const key = `${facility.name}|${facility.street1 || ''}|${facility.city}|${facility.state}|${facility.phone || ''}`;
+    if (!seen.has(key)) {
+      seen.set(key, facility);
+    }
+  }
+
+  const facilities = Array.from(seen.values());
+  const duplicatesRemoved = allFacilities.length - facilities.length;
+
+  console.log(`  Unique facilities: ${facilities.length}`);
+  console.log(`  Duplicates removed: ${duplicatesRemoved}\n`);
 
   // Calculate DQS stats
   const indexable = facilities.filter(f => f.is_indexable).length;

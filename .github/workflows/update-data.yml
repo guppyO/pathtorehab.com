@@ -52,10 +52,13 @@ jobs:
       - name: Ingest to database
         if: steps.changes.outputs.data_changed == 'true' || inputs.force_update == 'true'
         env:
-          DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          echo "DIRECT_URL=$DIRECT_URL" > Supabase.txt
-          npx tsx scripts/ingest-data.ts --latest
+          echo "SUPABASE_URL=$SUPABASE_URL" > Supabase.txt
+          echo "SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> Supabase.txt
+          npx tsx scripts/ingest-data.ts --truncate
+          npx tsx scripts/fix-counts.ts
           rm Supabase.txt
 
       - name: Commit updated data
