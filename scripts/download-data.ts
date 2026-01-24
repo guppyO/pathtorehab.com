@@ -36,6 +36,13 @@ interface SAMHSAFacility {
   [key: string]: unknown;
 }
 
+interface SAMHSAResponse {
+  page: number;
+  totalPages: number;
+  recordCount: number;
+  rows: SAMHSAFacility[];
+}
+
 async function downloadData(): Promise<void> {
   console.log('Starting SAMHSA data download...');
   console.log(`API URL: ${SAMHSA_API_URL}`);
@@ -48,21 +55,49 @@ async function downloadData(): Promise<void> {
   }
 
   try {
-    console.log('\nFetching data from SAMHSA API...');
+    console.log('\nFetching data from SAMHSA API (paginated)...');
     const startTime = Date.now();
 
-    const response = await fetch(SAMHSA_API_URL, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'PathToRehab/1.0 (Data Sync)',
-      },
-    });
+    const allFacilities: SAMHSAFacility[] = [];
+    let currentPage = 1;
+    let totalPages = 1;
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    // Fetch all pages
+    while (currentPage <= totalPages) {
+      const url = `${SAMHSA_API_URL}?page=${currentPage}`;
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'PathToRehab/1.0 (Data Sync)',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json() as SAMHSAResponse;
+
+      if (currentPage === 1) {
+        totalPages = result.totalPages;
+        console.log(`Total pages: ${totalPages}, Total records: ${result.recordCount}`);
+      }
+
+      allFacilities.push(...result.rows);
+
+      if (currentPage % 100 === 0 || currentPage === totalPages) {
+        console.log(`Progress: ${currentPage}/${totalPages} pages (${allFacilities.length} facilities)`);
+      }
+
+      currentPage++;
+
+      // Small delay to avoid rate limiting
+      if (currentPage <= totalPages) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
     }
 
-    const data = await response.json() as SAMHSAFacility[];
+    const data = allFacilities;
     const fetchTime = Date.now() - startTime;
 
     console.log(`Fetched ${data.length} facilities in ${(fetchTime / 1000).toFixed(2)}s`);
