@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE_NAME, SITE_URL } from '@/lib/db';
+import { Footer } from '@/components/Footer';
 import { ChevronRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -155,11 +156,7 @@ export default function TermsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

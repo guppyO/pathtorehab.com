@@ -11,6 +11,7 @@ import {
 import { SearchBar } from '@/components/SearchBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SidebarAd, InContentAd } from '@/components/AdUnit';
+import { Footer } from '@/components/Footer';
 import {
   ChevronRight,
   MapPin,
@@ -416,47 +417,7 @@ export default async function CityPage({ params }: PageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t border-border py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-4">
-            <div>
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                  <ChevronRight className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="font-bold text-lg text-foreground">{SITE_NAME}</span>
-              </Link>
-              <p className="text-sm text-muted-foreground">
-                Helping people find the path to recovery with verified treatment center information.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/browse" className="hover:text-foreground transition-colors">Browse All States</Link></li>
-                <li><Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="https://findtreatment.gov" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">SAMHSA FindTreatment.gov</a></li>
-                <li><a href="tel:1-800-662-4357" className="hover:text-foreground transition-colors">National Helpline</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} {SITE_NAME}. Data sourced from SAMHSA.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

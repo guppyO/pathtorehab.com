@@ -464,6 +464,39 @@ async function populateCities(supabase: SupabaseClient): Promise<void> {
   console.log(`✅ Populated ${inserted} cities\n`);
 }
 
+// Update data_metadata table
+async function updateMetadata(supabase: SupabaseClient, recordCount: number): Promise<void> {
+  console.log('📝 Updating data_metadata...\n');
+
+  if (DRY_RUN) {
+    console.log('  [DRY RUN] Would update data_metadata\n');
+    return;
+  }
+
+  // Get current month and year for data_period
+  const now = new Date();
+  const dataPeriod = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const { error } = await supabase
+    .from('data_metadata')
+    .upsert({
+      id: 1,
+      source_name: 'SAMHSA FindTreatment',
+      source_url: 'https://findtreatment.gov/locator/exportsAsJson/v2',
+      data_period: dataPeriod,
+      record_count: recordCount,
+      last_updated: now.toISOString(),
+      last_checked_at: now.toISOString(),
+    }, { onConflict: 'id' });
+
+  if (error) {
+    console.error('  Error updating metadata:', error.message);
+    console.log('  (This is OK if the table does not exist yet)\n');
+  } else {
+    console.log(`  ✅ Updated metadata: ${recordCount} records, period: ${dataPeriod}\n`);
+  }
+}
+
 // Main execution
 async function main(): Promise<void> {
   console.log('🚀 PathToRehab Data Ingestion\n');
@@ -573,6 +606,9 @@ async function main(): Promise<void> {
     console.log(`  States: ${stateCount}`);
     console.log(`  Cities: ${cityCount}`);
     console.log(`  Indexable facilities: ${indexableCount}\n`);
+
+    // Update metadata table for data freshness tracking
+    await updateMetadata(supabase, facilityCount || 0);
   }
 }
 
