@@ -4,6 +4,8 @@ export const runtime = 'edge';
 export const size = { width: 32, height: 32 };
 export const contentType = 'image/png';
 
+// Favicon must match the header logo exactly
+// Header logo is in src/app/page.tsx - ChevronRight icon
 export default function Icon() {
   return new ImageResponse(
     (
@@ -18,19 +20,18 @@ export default function Icon() {
           borderRadius: 6,
         }}
       >
-        {/* Path/Arrow symbol representing the journey to recovery */}
+        {/* ChevronRight icon - matches header logo in page.tsx */}
         <svg
           width="20"
           height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
+          <path d="m9 18 6-6-6-6" />
         </svg>
       </div>
     ),
