@@ -23,6 +23,14 @@ export const metadata: Metadata = {
     default: 'Path To Rehab - Find Addiction & Mental Health Treatment Centers',
     template: '%s | Path To Rehab',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon', type: 'image/png', sizes: '32x32' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/icon',
+  },
   description: 'Find drug rehab, alcohol treatment, and mental health facilities near you. Browse 15,000+ SAMHSA-verified treatment centers with verified services, payment options, and contact information.',
   keywords: [
     'drug rehab',
