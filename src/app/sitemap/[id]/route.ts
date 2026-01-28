@@ -62,11 +62,12 @@ export async function GET(
 
   // If this is sitemap 0, also include static pages and hub pages
   if (sitemapId === 0) {
+    const today = new Date().toISOString().split('T')[0];
     const staticPages = [
-      { loc: SITE_URL, priority: '1.0', changefreq: 'daily' },
-      { loc: `${SITE_URL}/browse`, priority: '0.9', changefreq: 'daily' },
-      { loc: `${SITE_URL}/privacy`, priority: '0.3', changefreq: 'yearly' },
-      { loc: `${SITE_URL}/terms`, priority: '0.3', changefreq: 'yearly' },
+      { loc: SITE_URL, priority: '1.0', changefreq: 'daily', lastmod: today },
+      { loc: `${SITE_URL}/browse`, priority: '0.9', changefreq: 'daily', lastmod: today },
+      { loc: `${SITE_URL}/privacy`, priority: '0.3', changefreq: 'yearly', lastmod: today },
+      { loc: `${SITE_URL}/terms`, priority: '0.3', changefreq: 'yearly', lastmod: today },
     ];
 
     // Add state pages
@@ -80,13 +81,15 @@ export async function GET(
         staticPages.push({
           loc: `${SITE_URL}/${state.slug}`,
           priority: '0.9',
-          changefreq: 'weekly'
+          changefreq: 'weekly',
+          lastmod: today
         });
       });
     }
 
     const staticUrls = staticPages.map(p => `  <url>
     <loc>${p.loc}</loc>
+    <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`);

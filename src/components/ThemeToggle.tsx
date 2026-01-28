@@ -41,7 +41,7 @@ export function ThemeToggle() {
     >
       {theme === 'light' && <Sun className="w-5 h-5 text-amber-500" />}
       {theme === 'dark' && <Moon className="w-5 h-5 text-slate-300" />}
-      {theme === 'system' && <Monitor className="w-5 h-5 text-teal-600 dark:text-teal-400" />}
+      {theme === 'system' && <Monitor className="w-5 h-5 text-teal-700 dark:text-teal-400" />}
     </button>
   );
 }
