@@ -3,12 +3,8 @@
  */
 
 import Link from 'next/link';
-import { ChevronRight, Check, Calendar } from 'lucide-react';
+import { ChevronRight, RefreshCw } from 'lucide-react';
 import { SITE_NAME } from '@/lib/db';
-
-// Data freshness - updated when SAMHSA data is refreshed
-const DATA_SOURCE = 'SAMHSA';
-const DATA_PERIOD = 'January 2025';
 
 export function Footer() {
   return (
@@ -25,15 +21,19 @@ export function Footer() {
             <p className="text-sm text-muted-foreground mb-4">
               Helping people find the path to recovery with verified treatment center information.
             </p>
-            {/* Data freshness badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                <Check className="w-3.5 h-3.5" />
-                Official {DATA_SOURCE} Data
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
-                <Calendar className="w-3.5 h-3.5" />
-                Data: {DATA_PERIOD}
+            {/* Data freshness */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm">
+              <RefreshCw className="h-4 w-4 text-primary" />
+              <span className="text-muted-foreground">
+                Data updated weekly from{' '}
+                <a
+                  href="https://findtreatment.gov"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline underline-offset-2 hover:text-primary/80"
+                >
+                  SAMHSA
+                </a>
               </span>
             </div>
           </div>
