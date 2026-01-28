@@ -1,12 +1,11 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const size = { width: 48, height: 48 };
+export const size = { width: 180, height: 180 };
 export const contentType = 'image/png';
 
-// Favicon must match the header logo exactly
-// Header logo is in src/app/page.tsx - ChevronRight icon
-export default function Icon() {
+// Apple touch icon - matches icon.tsx design
+export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
@@ -17,13 +16,13 @@ export default function Icon() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
-          borderRadius: 8,
+          borderRadius: 32,
         }}
       >
-        {/* ChevronRight icon - matches header logo in page.tsx */}
+        {/* ChevronRight icon - matches header logo */}
         <svg
-          width="30"
-          height="30"
+          width="110"
+          height="110"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
