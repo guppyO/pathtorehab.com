@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getAllStates, getTotalIndexableCount, SITE_NAME } from '@/lib/db';
 import { SearchBar } from '@/components/SearchBar';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/Header';
 import { HeroAd, SidebarAd } from '@/components/AdUnit';
 import { Footer } from '@/components/Footer';
 import {
@@ -64,25 +64,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center">
-              <ChevronRight className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl text-foreground">{SITE_NAME}</span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/browse"
-              className="hidden sm:block text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Browse All
-            </Link>
-            <ThemeToggle />
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-16 md:py-24">
