@@ -1,0 +1,37 @@
+{
+  "siteName": "Path to Rehab",
+  "niche": "substance abuse treatment, addiction recovery, rehabilitation facilities",
+  "dataSource": "SAMHSA (Substance Abuse and Mental Health Services Administration) Treatment Locator Database",
+  "targetAudience": [
+    "individuals seeking treatment",
+    "families helping loved ones",
+    "healthcare professionals",
+    "social workers and counselors"
+  ],
+  "keyEntities": [
+    "treatment facilities",
+    "treatment types",
+    "states",
+    "cities",
+    "insurance options",
+    "service categories"
+  ],
+  "topicTemplates": [
+    "How to find the right treatment facility for [condition]",
+    "Complete guide to understanding addiction treatment options",
+    "[Year] trends in substance abuse treatment",
+    "How to compare treatment facilities in your area",
+    "What to look for when choosing a rehab center",
+    "[X] things to know before entering treatment",
+    "Understanding different levels of care in addiction treatment",
+    "How insurance coverage works for substance abuse treatment"
+  ],
+  "internalLinkPages": [
+    "/search",
+    "/states",
+    "/treatment-types"
+  ],
+  "authorName": "The Path to Rehab Team",
+  "authorBio": "Healthcare information specialists committed to helping individuals and families navigate the path to recovery using verified SAMHSA data.",
+  "siteUrl": "https://pathtorehab.com"
+}
