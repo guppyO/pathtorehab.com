@@ -8,9 +8,16 @@ import {
   SITE_NAME,
   Facility,
 } from '@/lib/db';
+import {
+  getFacilityRankings,
+  generateFacilityInsights,
+  getCustomizedQuestions,
+  getComparisonFacilities,
+} from '@/lib/insights';
 import { SidebarAd, InContentAd } from '@/components/AdUnit';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { FacilityInsights } from '@/components/FacilityInsights';
 import {
   MapPin,
   Phone,
@@ -109,31 +116,7 @@ function ServiceSection({ title, items, icon: Icon }: { title: string; items: st
   );
 }
 
-// Questions to ask
-function QuestionsToAsk() {
-  const questions = [
-    "What treatment programs do you offer?",
-    "Do you accept my insurance?",
-    "What is the program length?",
-    "Do you offer detox on-site?",
-  ];
-
-  return (
-    <div className="bg-muted/30 rounded-xl border border-border p-4 mb-6">
-      <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-        <HelpCircle className="w-4 h-4 text-primary" />
-        Questions to Ask
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {questions.map((q, i) => (
-          <span key={i} className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">
-            {q}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+// QuestionsToAsk removed - now using customized questions via FacilityInsights component
 
 // Crisis helpline
 function CrisisHelpline() {
@@ -183,7 +166,14 @@ export default async function FacilityPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedFacilities = await getFacilitiesByCity(facility.state, facility.city_slug, 6);
+  // Fetch data for insights (anti-thin-content)
+  const [relatedFacilities, rankings, comparisonFacilities] = await Promise.all([
+    getFacilitiesByCity(facility.state, facility.city_slug, 6),
+    getFacilityRankings(facility),
+    getComparisonFacilities(facility, 4),
+  ]);
+  const insights = generateFacilityInsights(facility, rankings);
+  const customQuestions = getCustomizedQuestions(facility);
   const otherFacilities = relatedFacilities.filter(f => f.id !== facility.id).slice(0, 4);
 
   const addressParts = [facility.street1, facility.street2, facility.city, facility.state, facility.zip].filter(Boolean);
@@ -365,8 +355,16 @@ export default async function FacilityPage({ params }: PageProps) {
               {/* In-content ad */}
               <InContentAd />
 
-              {/* Questions to Ask */}
-              <QuestionsToAsk />
+              {/* Facility Insights - Unique value-add content */}
+              <FacilityInsights
+                facilityName={facility.name}
+                city={facility.city}
+                state={facility.state}
+                insights={insights}
+                rankings={rankings}
+                customQuestions={customQuestions}
+                comparisonFacilities={comparisonFacilities}
+              />
 
               {/* Crisis Helpline */}
               <CrisisHelpline />
