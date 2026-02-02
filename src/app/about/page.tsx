@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'About Us - Path to Rehab',
@@ -8,7 +10,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-background py-12 px-4">
+    <>
+      <Header />
+      <main className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-foreground mb-6">
           About Path to Rehab
@@ -108,5 +112,7 @@ export default function AboutPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }

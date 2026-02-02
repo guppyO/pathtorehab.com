@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { Calendar, User, Tag, ArrowLeft, Heart } from 'lucide-react';
 
 interface PageProps {
@@ -73,8 +75,10 @@ export default async function BlogPostPage({ params }: PageProps) {
   const htmlContent = markdownToHtml(post.content);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <article className="max-w-3xl mx-auto">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+        <article className="max-w-3xl mx-auto">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 mb-8 transition-colors"
@@ -166,7 +170,9 @@ export default async function BlogPostPage({ params }: PageProps) {
             View all blog posts →
           </Link>
         </div>
-      </article>
-    </main>
+        </article>
+      </main>
+      <Footer />
+    </>
   );
 }

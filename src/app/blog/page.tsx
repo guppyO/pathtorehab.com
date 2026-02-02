@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllBlogPosts, getAllCategories } from '@/lib/blog';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { Calendar, User, Tag, ArrowRight, Heart } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -13,7 +15,9 @@ export default function BlogPage() {
   const categories = getAllCategories();
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -115,5 +119,7 @@ export default function BlogPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }
