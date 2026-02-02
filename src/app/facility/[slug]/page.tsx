@@ -13,7 +13,9 @@ import {
   generateFacilityInsights,
   getCustomizedQuestions,
   getComparisonFacilities,
+  generateFacilityFAQs,
 } from '@/lib/insights';
+import { BreadcrumbJsonLd, TreatmentFacilityJsonLd, FAQJsonLd } from '@/components/JsonLd';
 import { SidebarAd, InContentAd } from '@/components/AdUnit';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -174,7 +176,16 @@ export default async function FacilityPage({ params }: PageProps) {
   ]);
   const insights = generateFacilityInsights(facility, rankings);
   const customQuestions = getCustomizedQuestions(facility);
+  const faqs = generateFacilityFAQs(facility, rankings);
   const otherFacilities = relatedFacilities.filter(f => f.id !== facility.id).slice(0, 4);
+
+  // Breadcrumb data for JSON-LD
+  const breadcrumbs = [
+    { name: 'Home', url: SITE_URL },
+    { name: facility.state, url: `${SITE_URL}/${facility.state.toLowerCase()}` },
+    { name: facility.city, url: `${SITE_URL}/${facility.state.toLowerCase()}/${facility.city_slug}` },
+    { name: facility.name, url: `${SITE_URL}/facility/${facility.slug}` },
+  ];
 
   const addressParts = [facility.street1, facility.street2, facility.city, facility.state, facility.zip].filter(Boolean);
   const fullAddress = addressParts.join(', ');
@@ -217,6 +228,8 @@ export default async function FacilityPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <BreadcrumbJsonLd items={breadcrumbs} />
+      <FAQJsonLd questions={faqs} />
 
       <div className="min-h-screen bg-background">
         {/* Header */}

@@ -292,6 +292,77 @@ export function getCustomizedQuestions(facility: Facility): string[] {
 }
 
 /**
+ * Generate FAQ questions with answers based on facility data
+ */
+export function generateFacilityFAQs(facility: Facility, rankings: FacilityRankings): { question: string; answer: string }[] {
+  const faqs: { question: string; answer: string }[] = [];
+
+  // Basic admission question
+  faqs.push({
+    question: `What is the admission process at ${facility.name}?`,
+    answer: `Contact ${facility.name} directly ${facility.intake_phone ? `at ${facility.intake_phone}` : ''} to begin the admission process. Most facilities require an initial assessment to determine the appropriate level of care.`,
+  });
+
+  // Insurance question
+  faqs.push({
+    question: `Does ${facility.name} accept insurance?`,
+    answer: facility.payment_options && facility.payment_options.length > 0
+      ? `${facility.name} accepts ${facility.payment_options.length} payment options including ${facility.payment_options.slice(0, 3).join(', ')}${facility.payment_options.length > 3 ? ', and more' : ''}. Contact them to verify your specific coverage.`
+      : `Contact ${facility.name} directly to inquire about accepted insurance plans and payment options.`,
+  });
+
+  // Services question
+  if (facility.type_of_care && facility.type_of_care.length > 0) {
+    faqs.push({
+      question: `What types of treatment does ${facility.name} offer?`,
+      answer: `${facility.name} offers ${facility.type_of_care.length} types of care including ${facility.type_of_care.slice(0, 4).join(', ')}${facility.type_of_care.length > 4 ? ', and more' : ''}.`,
+    });
+  }
+
+  // Location ranking question
+  faqs.push({
+    question: `How does ${facility.name} compare to other facilities in ${facility.city}?`,
+    answer: rankings.cityRank === 1
+      ? `${facility.name} is ranked #1 among ${rankings.totalInCity} SAMHSA-listed treatment facilities in ${facility.city}, ${facility.state} based on service comprehensiveness.`
+      : `${facility.name} is one of ${rankings.totalInCity} treatment facilities in ${facility.city}. It ranks #${rankings.cityRank} based on the range of services offered.`,
+  });
+
+  // Dual diagnosis question
+  if (rankings.hasDualDiagnosis) {
+    faqs.push({
+      question: `Does ${facility.name} treat co-occurring mental health conditions?`,
+      answer: `Yes, ${facility.name} offers dual diagnosis treatment, providing integrated care for both substance use disorders and co-occurring mental health conditions such as depression, anxiety, or PTSD.`,
+    });
+  }
+
+  // MAT question
+  if (rankings.hasMAT) {
+    faqs.push({
+      question: `Does ${facility.name} offer medication-assisted treatment (MAT)?`,
+      answer: `Yes, ${facility.name} provides medication-assisted treatment options, which may include FDA-approved medications like buprenorphine, methadone, or naltrexone as part of a comprehensive treatment approach.`,
+    });
+  }
+
+  // Detox question
+  if (rankings.hasDetox) {
+    faqs.push({
+      question: `Does ${facility.name} provide detox services?`,
+      answer: `Yes, ${facility.name} offers detoxification services to help patients safely manage withdrawal symptoms under medical supervision before transitioning to ongoing treatment.`,
+    });
+  }
+
+  // 24/7 access
+  if (rankings.has24HourHotline) {
+    faqs.push({
+      question: `Can I reach ${facility.name} 24/7?`,
+      answer: `Yes, ${facility.name} has a 24-hour hotline available for immediate assistance at any time. Call ${facility.hotline} for crisis support or to begin the intake process.`,
+    });
+  }
+
+  return faqs.slice(0, 6);
+}
+
+/**
  * Get comparison facilities
  */
 export async function getComparisonFacilities(
