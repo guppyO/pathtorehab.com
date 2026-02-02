@@ -63,10 +63,23 @@ export function FacilityInsights({
               <div className="text-xl font-bold text-accent-foreground">{rankings.typeOfCareCount}</div>
               <div className="text-xs text-muted-foreground">care types</div>
             </div>
-            <div className="bg-muted rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-foreground">{rankings.specialProgramsCount}</div>
-              <div className="text-xs text-muted-foreground">programs</div>
-            </div>
+            {/* Show programs if > 0, otherwise show payment options */}
+            {rankings.specialProgramsCount > 0 ? (
+              <div className="bg-muted rounded-lg p-3 text-center">
+                <div className="text-xl font-bold text-foreground">{rankings.specialProgramsCount}</div>
+                <div className="text-xs text-muted-foreground">programs</div>
+              </div>
+            ) : rankings.paymentOptionsCount > 0 ? (
+              <div className="bg-muted rounded-lg p-3 text-center">
+                <div className="text-xl font-bold text-foreground">{rankings.paymentOptionsCount}</div>
+                <div className="text-xs text-muted-foreground">payment options</div>
+              </div>
+            ) : (
+              <div className="bg-muted rounded-lg p-3 text-center">
+                <div className="text-xl font-bold text-foreground">{rankings.serviceSettingsCount}</div>
+                <div className="text-xs text-muted-foreground">settings</div>
+              </div>
+            )}
           </div>
 
           {/* Insight Cards */}
