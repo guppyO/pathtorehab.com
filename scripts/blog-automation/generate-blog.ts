@@ -116,6 +116,7 @@ Generate ONE new, unique blog topic that:
 4. Can incorporate our data/entities naturally
 5. Is SPECIFIC and actionable (not generic)
 6. Would rank well for SEO (think long-tail keywords)
+7. EVERGREEN: Do NOT include specific years (like "2026" or "2025") in the title - we want timeless content that doesn't become outdated
 
 Return ONLY the topic title (no explanation, no quotes, no punctuation at end).`;
 
@@ -185,7 +186,7 @@ tags: ["tag1", "tag2", "tag3"]
   const article = await generateWithFallback([
     {
       role: 'system',
-      content: `You are an expert content writer who creates valuable, well-researched articles for the ${config.niche} industry. Your writing is engaging, informative, and optimized for both readers and SEO. You always write at least 1000 words.`
+      content: `You are an expert content writer who creates valuable, well-researched articles for the ${config.niche} industry. Your writing is engaging, informative, and optimized for both readers and SEO. You always write at least 1000 words. IMPORTANT: Write EVERGREEN content - avoid mentioning specific years (like "2026", "this year", "in 2026") in the content. Instead use phrases like "currently", "today", "recent data", "latest statistics". This ensures the article stays relevant and doesn't become outdated.`
     },
     { role: 'user', content: articlePrompt }
   ], 4000);
