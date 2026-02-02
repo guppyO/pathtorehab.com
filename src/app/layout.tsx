@@ -101,11 +101,15 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Google AdSense */}
+        {/* Google AdSense - loaded with defer to not compete with main content */}
         <script
           async
+          defer
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1226435955298586"
           crossOrigin="anonymous"
         />
