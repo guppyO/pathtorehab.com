@@ -51,16 +51,16 @@ export function FacilityInsights({
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="bg-primary/5 rounded-lg p-3 text-center">
+            <div className="bg-primary/10 rounded-lg p-3 text-center">
               <div className="text-xl font-bold text-primary">#{rankings.cityRank}</div>
               <div className="text-xs text-muted-foreground">in {city}</div>
             </div>
-            <div className="bg-secondary/5 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-secondary">#{rankings.stateRank}</div>
+            <div className="bg-primary/10 rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-primary">#{rankings.stateRank}</div>
               <div className="text-xs text-muted-foreground">in {state}</div>
             </div>
-            <div className="bg-accent/10 rounded-lg p-3 text-center">
-              <div className="text-xl font-bold text-accent-foreground">{rankings.typeOfCareCount}</div>
+            <div className="bg-muted rounded-lg p-3 text-center">
+              <div className="text-xl font-bold text-foreground">{rankings.typeOfCareCount}</div>
               <div className="text-xs text-muted-foreground">care types</div>
             </div>
             {/* Show programs if > 0, otherwise show payment options */}
