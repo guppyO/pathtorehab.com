@@ -6,6 +6,8 @@
 
 import { Metadata } from 'next';
 import { ContactForm } from '@/components/ContactForm';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 const SITE_NAME = 'Path to Rehab';
 const SITE_DESCRIPTION = 'Find substance abuse treatment facilities near you with verified SAMHSA data.';
@@ -17,7 +19,9 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -120,5 +124,7 @@ export default function ContactPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }
